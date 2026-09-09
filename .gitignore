@@ -1,1 +1,9 @@
 node_modules
+dist
+build
+generated
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
