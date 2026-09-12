@@ -46,7 +46,7 @@ app.use('/api', emailRoutes)
 // fallback in case that ever changes back.
 app.use(
   cors({
-    origin: [env.CLIENT_URL || 'http://localhost:5173', 'http://localhost:5173', 'http://localhost:4001'],
+    origin: [env.CLIENT_URL || 'http://localhost:4002', 'http://localhost:4003', 'http://localhost:4001'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
