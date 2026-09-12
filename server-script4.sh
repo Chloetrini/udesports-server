@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Applying UDESPORT backend fix: allow localhost:4001 (the client dev port) in CORS..."
+
+mkdir -p "$(dirname "src/server.ts")"
+cat > "src/server.ts" << 'UDESFIX2_01_EOF'
 import express, { NextFunction, Request, Response } from 'express'
 import cors from 'cors'
 import fileUpload from 'express-fileupload'
@@ -136,3 +142,9 @@ if (!process.env.VERCEL) {
 }
 
 export default app
+UDESFIX2_01_EOF
+echo "  wrote src/server.ts"
+
+echo ""
+echo "Done. Next steps:"
+echo "  npx tsc --noEmit && git add -A && git commit -m \"fix: allow localhost:4001 in CORS\" && git push"
