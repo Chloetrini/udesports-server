@@ -11,8 +11,8 @@
 
 export const PlayerStatus = {
   FREE: 'FREE',
-  CONTRACTED: 'CONTRACTED',
-  LOANED: 'LOANED'
+  TRANSFERRED: 'TRANSFERRED',
+  NEGOTIATION: 'NEGOTIATION'
 } as const
 
 export type PlayerStatus = (typeof PlayerStatus)[keyof typeof PlayerStatus]

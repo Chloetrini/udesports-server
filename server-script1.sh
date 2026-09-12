@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -e
+echo "Applying UDESPORT backend change: rename PlayerStatus enum values to match the frontend (Free/Transferred/Negotiation)..."
+
+mkdir -p "prisma"
+cat > "prisma/schema.prisma" << 'EOF_UDEx_187e4a6f'
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -158,3 +164,24 @@ model EmailQueue {
   @@index([status, createdAt])
   @@map("email_queue")
 }
+EOF_UDEx_187e4a6f
+echo "  wrote prisma/schema.prisma"
+
+mkdir -p "prisma/migrations/20260911123106_rename_player_status_values"
+cat > "prisma/migrations/20260911123106_rename_player_status_values/migration.sql" << 'EOF_UDEx_664dc352'
+-- Rename PlayerStatus enum values to match the frontend's status vocabulary
+-- (the admin dashboard displays "Free" / "Transferred" / "Negotiation").
+-- Postgres enum RENAME VALUE keeps existing rows intact — no data migration needed.
+
+ALTER TYPE "PlayerStatus" RENAME VALUE 'CONTRACTED' TO 'TRANSFERRED';
+ALTER TYPE "PlayerStatus" RENAME VALUE 'LOANED' TO 'NEGOTIATION';
+
+EOF_UDEx_664dc352
+echo "  wrote prisma/migrations/20260911123106_rename_player_status_values/migration.sql"
+
+echo ""
+echo "Done. Next steps:"
+echo "  1. npx prisma generate            (regenerates the Prisma client with the new enum values)"
+echo "  2. npx prisma migrate deploy       (applies the migration to your database — RENAME VALUE, no data loss)"
+echo "     (use \"npx prisma migrate dev\" instead if this is your local dev database)"
+echo "  3. restart the server"

@@ -10,7 +10,12 @@ import { env } from './key.js'
 
 const isDev = env.NODE_ENV === 'development'
 
-//reuse a single client + pool across hot-reloads in dev to avoid exhausting connections
+// Reuse a single client + pool across hot-reloads in dev, AND across warm
+// invocations of the same serverless function (Vercel) in production — a
+// long-running server only ever loads this module once anyway, so caching
+// here is free there, but on Vercel each cold start would otherwise open a
+// brand new pool of up to `max` connections with no way to close the old
+// one, exhausting the database's connection limit under real traffic.
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient
   pool?: Pool
@@ -36,10 +41,8 @@ export const prisma =
     log: isDev ? ['query', 'error', 'warn'] : ['error'],
   })
 
-if (isDev) {
-  globalForPrisma.prisma = prisma
-  globalForPrisma.pool = pool
-}
+globalForPrisma.prisma = prisma
+globalForPrisma.pool = pool
 
 export {  pool }
 export default prisma
