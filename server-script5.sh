@@ -1,3 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Applying server-script5: add a Professional count to dashboard age-group stats..."
+
+mkdir -p "$(dirname "src/controllers/player.controller.ts")"
+cat > "src/controllers/player.controller.ts" << 'UDES_EOF_9082218537347529474'
 import { Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 import { prisma } from "../config/prisma.js";
@@ -276,3 +283,6 @@ export const getDashboardStats = tryCatchWrapper(async (req: Request, res: Respo
     },
   });
 });
+UDES_EOF_9082218537347529474
+
+echo "Done. Now run: npx tsc --noEmit"
