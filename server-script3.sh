@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Applying UDESPORT backend hotfix: stop pino-pretty from crashing every request on Vercel..."
+
+mkdir -p "$(dirname "src/config/logger.ts")"
+cat > "src/config/logger.ts" << 'UDESFIX_01_EOF'
 import pino, { type Logger } from 'pino'
 import { env } from './key.js'
 
@@ -72,3 +78,11 @@ export const logRequest = (
 }
 
 export default logger
+UDESFIX_01_EOF
+echo "  wrote src/config/logger.ts"
+
+echo ""
+echo "Done. Next steps:"
+echo "  1. npx tsc --noEmit"
+echo "  2. git add -A && git commit -m \"fix: stop pino-pretty transport from crashing on Vercel\" && git push"
+echo "  3. Also double-check NODE_ENV=production is actually set in Vercel Settings -> Environment Variables -- this fix stops the crash either way, but NODE_ENV being wrong still affects other things (log verbosity, cookie secure flag)."
