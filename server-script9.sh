@@ -1,3 +1,10 @@
+#!/bin/bash
+set -e
+
+echo 'Applying server-script9: fixes slow/oversized player, gallery and news photo uploads — every upload path now resizes and auto-optimizes through Cloudinary (previously only some paths did, which is why some photos uploaded via edit/update were left at full original resolution)...'
+
+mkdir -p "$(dirname 'src/controllers/player.controller.ts')"
+cat > 'src/controllers/player.controller.ts' << 'UDESPORT_EOF_0_S9'
 import { Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 import { prisma } from "../config/prisma.js";
@@ -346,3 +353,324 @@ export const getDashboardStats = tryCatchWrapper(async (req: Request, res: Respo
     },
   });
 });
+UDESPORT_EOF_0_S9
+
+mkdir -p "$(dirname 'src/controllers/gallery.controller.ts')"
+cat > 'src/controllers/gallery.controller.ts' << 'UDESPORT_EOF_1_S9'
+import { Request, Response } from "express";
+import { UploadedFile } from "express-fileupload";
+import { prisma } from "../config/prisma.js";
+import cloudinary from "../config/cloudinary.js";
+import tryCatchWrapper from "../lib/tryCatchWrapper.js";
+import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
+
+// GET ALL GALLERY ITEMS (public — published only)
+export const getGallery = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const items = await prisma.galleryItem.findMany({
+    where: { published: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  sendTsRestSuccess(res, 200, {
+    success: true,
+    message: "Gallery fetched successfully",
+    body: { count: items.length, items },
+  });
+});
+
+// GET ALL GALLERY ITEMS (admin — includes drafts)
+export const getGalleryAdmin = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const items = await prisma.galleryItem.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  sendTsRestSuccess(res, 200, {
+    success: true,
+    message: "Gallery fetched successfully",
+    body: { count: items.length, items },
+  });
+});
+
+// CREATE GALLERY ITEM
+export const createGalleryItem = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const { headline, instaUrl, description, isDraft } = req.body;
+
+  // upload cover image if a file was sent
+  let coverImage: string | null = null;
+  if (req.files && req.files.coverImage) {
+    const file = (Array.isArray(req.files.coverImage)
+      ? req.files.coverImage[0]
+      : req.files.coverImage) as UploadedFile;
+
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { folder: "udesport/gallery", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(file.data);
+    });
+    coverImage = result.secure_url;
+  }
+
+  const item = await prisma.galleryItem.create({
+    data: {
+      headline: headline || null,
+      instaUrl: instaUrl || null,
+      description: description || null,
+      coverImage,
+      published: isDraft === "true" || isDraft === true ? false : true,
+    },
+  });
+
+  sendTsRestSuccess(res, 201, {
+    success: true,
+    message: item.published ? "Photo published" : "Photo saved to drafts",
+    body: { item },
+  });
+});
+
+// UPDATE GALLERY ITEM
+export const updateGalleryItem = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const id = req.params.id as string;
+
+  const existing = await prisma.galleryItem.findUnique({ where: { id } });
+  if (!existing) {
+    return sendTsRestError(res, 404, "Gallery item not found");
+  }
+
+  const { headline, instaUrl, description, isDraft } = req.body;
+
+  // keep current cover unless a new one is uploaded
+  let coverImage = existing.coverImage;
+  if (req.files && req.files.coverImage) {
+    const file = (Array.isArray(req.files.coverImage)
+      ? req.files.coverImage[0]
+      : req.files.coverImage) as UploadedFile;
+
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { folder: "udesport/gallery", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(file.data);
+    });
+    coverImage = result.secure_url;
+  }
+
+  const item = await prisma.galleryItem.update({
+    where: { id },
+    data: {
+      headline: headline ?? undefined,
+      instaUrl: instaUrl ?? undefined,
+      description: description ?? undefined,
+      published: isDraft === undefined ? undefined : !(isDraft === "true" || isDraft === true),
+      coverImage,
+    },
+  });
+
+  sendTsRestSuccess(res, 200, {
+    success: true,
+    message: "Gallery item updated",
+    body: { item },
+  });
+});
+
+// DELETE GALLERY ITEM
+export const deleteGalleryItem = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const id = req.params.id as string;
+
+  const existing = await prisma.galleryItem.findUnique({ where: { id } });
+  if (!existing) {
+    return sendTsRestError(res, 404, "Gallery item not found");
+  }
+
+  await prisma.galleryItem.delete({ where: { id } });
+
+  sendTsRestSuccess(res, 200, { success: true, message: "Gallery item deleted" });
+});
+UDESPORT_EOF_1_S9
+
+mkdir -p "$(dirname 'src/controllers/news.controller.ts')"
+cat > 'src/controllers/news.controller.ts' << 'UDESPORT_EOF_2_S9'
+import { Request, Response } from "express";
+import { UploadedFile } from "express-fileupload";
+import { prisma } from "../config/prisma.js";
+import cloudinary from "../config/cloudinary.js";
+import { AuthRequest } from "../middlewares/auth.middleware.js";
+import tryCatchWrapper from "../lib/tryCatchWrapper.js";
+import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
+
+// GET ALL NEWS (public — only published articles)
+export const getAllNews = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const news = await prisma.news.findMany({
+    where: { published: true },
+    orderBy: { createdAt: "desc" },
+    include: { featuredPlayer: true, author: { select: { name: true } } },
+  });
+
+  sendTsRestSuccess(res, 200, {
+    success: true,
+    message: "News fetched successfully",
+    body: { count: news.length, news },
+  });
+});
+
+// GET ALL NEWS (admin — includes drafts)
+export const getAllNewsAdmin = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const news = await prisma.news.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { featuredPlayer: true, author: { select: { name: true } } },
+  });
+
+  sendTsRestSuccess(res, 200, {
+    success: true,
+    message: "News fetched successfully",
+    body: { count: news.length, news },
+  });
+});
+
+// GET SINGLE NEWS ARTICLE
+export const getNews = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const id = req.params.id as string;
+
+  const news = await prisma.news.findUnique({
+    where: { id },
+    include: { featuredPlayer: true, author: { select: { name: true } } },
+  });
+
+  if (!news) {
+    return sendTsRestError(res, 404, "Article not found");
+  }
+
+  sendTsRestSuccess(res, 200, {
+    success: true,
+    message: "Article fetched successfully",
+    body: { news },
+  });
+});
+
+// CREATE NEWS ARTICLE
+export const createNews = tryCatchWrapper(async (req: AuthRequest, res: Response): Promise<void> => {
+  const { headline, category, summary, body, featuredPlayerId, isDraft } = req.body;
+
+  if (!headline || !category || !body) {
+    return sendTsRestError(res, 400, "Headline, category, and body are required");
+  }
+
+  // Upload cover image if provided
+  let coverImage: string | null = null;
+  if (req.files && req.files.coverImage) {
+    const file = (Array.isArray(req.files.coverImage)
+      ? req.files.coverImage[0]
+      : req.files.coverImage) as UploadedFile;
+
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { folder: "udesport/news", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(file.data);
+    });
+    coverImage = result.secure_url;
+  }
+
+  const news = await prisma.news.create({
+    data: {
+      headline,
+      category, // TRANSFER / ACADEMY / ANNOUNCEMENT
+      summary: summary || null,
+      body,
+      coverImage,
+      published: isDraft === "true" || isDraft === true ? false : true, // Publish vs Draft
+      featuredPlayerId: featuredPlayerId || null,
+      authorId: req.admin!.id, // the logged-in admin
+    },
+  });
+
+  sendTsRestSuccess(res, 201, {
+    success: true,
+    message: news.published ? "Article published successfully" : "Article saved to drafts",
+    body: { news },
+  });
+});
+
+// UPDATE NEWS ARTICLE
+export const updateNews = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const id = req.params.id as string;
+
+  const existing = await prisma.news.findUnique({ where: { id } });
+  if (!existing) {
+    return sendTsRestError(res, 404, "Article not found");
+  }
+
+  const { headline, category, summary, body, featuredPlayerId, isDraft } = req.body;
+
+  // keep current cover unless a new one is uploaded
+  let coverImage = existing.coverImage;
+  if (req.files && req.files.coverImage) {
+    const file = (Array.isArray(req.files.coverImage)
+      ? req.files.coverImage[0]
+      : req.files.coverImage) as UploadedFile;
+
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { folder: "udesport/news", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(file.data);
+    });
+    coverImage = result.secure_url;
+  }
+
+  const news = await prisma.news.update({
+    where: { id },
+    data: {
+      headline: headline ?? undefined,
+      category: category ?? undefined,
+      summary: summary ?? undefined,
+      body: body ?? undefined,
+      featuredPlayerId: featuredPlayerId ?? undefined,
+      published: isDraft === undefined ? undefined : !(isDraft === "true" || isDraft === true),
+      coverImage,
+    },
+  });
+
+  sendTsRestSuccess(res, 200, {
+    success: true,
+    message: "Article updated successfully",
+    body: { news },
+  });
+});
+
+// DELETE NEWS ARTICLE
+export const deleteNews = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const id = req.params.id as string;
+
+  const existing = await prisma.news.findUnique({ where: { id } });
+  if (!existing) {
+    return sendTsRestError(res, 404, "Article not found");
+  }
+
+  await prisma.news.delete({ where: { id } });
+
+  sendTsRestSuccess(res, 200, { success: true, message: "Article deleted successfully" });
+});
+UDESPORT_EOF_2_S9
+
+echo 'Done. Run: npx tsc --noEmit'

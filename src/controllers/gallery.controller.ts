@@ -46,7 +46,7 @@ export const createGalleryItem = tryCatchWrapper(async (req: Request, res: Respo
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { folder: "udesport/gallery", transformation: [{ width: 1200, quality: "auto" }] },
+          { folder: "udesport/gallery", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
           (error, result) => {
             if (error || !result) reject(error);
             else resolve(result);
@@ -94,10 +94,13 @@ export const updateGalleryItem = tryCatchWrapper(async (req: Request, res: Respo
 
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({ folder: "udesport/gallery" }, (error, result) => {
-          if (error || !result) reject(error);
-          else resolve(result);
-        })
+        .upload_stream(
+          { folder: "udesport/gallery", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        )
         .end(file.data);
     });
     coverImage = result.secure_url;

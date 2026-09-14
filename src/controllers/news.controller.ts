@@ -73,7 +73,7 @@ export const createNews = tryCatchWrapper(async (req: AuthRequest, res: Response
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { folder: "udesport/news", transformation: [{ width: 1200, quality: "auto" }] },
+          { folder: "udesport/news", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
           (error, result) => {
             if (error || !result) reject(error);
             else resolve(result);
@@ -124,10 +124,13 @@ export const updateNews = tryCatchWrapper(async (req: Request, res: Response): P
 
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({ folder: "udesport/news" }, (error, result) => {
-          if (error || !result) reject(error);
-          else resolve(result);
-        })
+        .upload_stream(
+          { folder: "udesport/news", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }] },
+          (error, result) => {
+            if (error || !result) reject(error);
+            else resolve(result);
+          }
+        )
         .end(file.data);
     });
     coverImage = result.secure_url;
