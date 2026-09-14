@@ -11,6 +11,7 @@ enum PlayerStatus {
   FREE
   TRANSFERRED
   NEGOTIATION
+  RETIRED
 }
 
 enum NewsCategory {
@@ -39,6 +40,8 @@ model Player {
   position        String
   goals           Int          @default(0)
   assists         Int          @default(0)
+  saves           Int          @default(0)
+  cleanSheets     Int          @default(0)
   rating          Int?
   currentClubName String?
   currentClubLogo String?

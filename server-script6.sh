@@ -1,35 +1,199 @@
+#!/usr/bin/env bash
+set -e
+echo "Applying server-script6: RETIRED player status + goalkeeper Saves/Clean Sheets fields (schema, migration, controller)."
+if [ ! -f "package.json" ] || [ ! -d "prisma" ]; then
+  echo "Run this from the root of your udesports-server repo."
+  exit 1
+fi
+
+mkdir -p "prisma"
+cat > "prisma/schema.prisma" << 'SERVER6_EOF'
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PlayerStatus {
+  FREE
+  TRANSFERRED
+  NEGOTIATION
+  RETIRED
+}
+
+enum NewsCategory {
+  TRANSFER
+  ACADEMY
+  ANNOUNCEMENT
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  SUB_ADMIN
+}
+
+model Player {
+  id              String       @id @default(uuid())
+  playerName      String
+  playerFullName  String?
+  playerPhoto     String?
+  DOB             DateTime
+  nationality     String
+  height          Int?
+  preferredFoot   String
+  ageGroup        String
+  status          PlayerStatus @default(FREE)
+  position        String
+  goals           Int          @default(0)
+  assists         Int          @default(0)
+  saves           Int          @default(0)
+  cleanSheets     Int          @default(0)
+  rating          Int?
+  currentClubName String?
+  currentClubLogo String?
+  newClubName     String?
+  newClubLogo     String?
+  playerHistory   String?
+  playerAppearance Int         @default(0)
+  isFeatured      Boolean      @default(false)
+
+  featuredIn      News[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+model News {
+  id               String       @id @default(uuid())
+  headline         String
+  category         NewsCategory
+  summary          String?
+  body             String
+  coverImage       String?
+  published        Boolean      @default(false)
+  featuredPlayer   Player?      @relation(fields: [featuredPlayerId], references: [id])
+  featuredPlayerId String?
+  author           Admin        @relation(fields: [authorId], references: [id])
+  authorId         String
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model Admin {
+  id                  String    @id @default(uuid())
+  name                String
+  email               String    @unique
+  password            String?   // nullable — invited admins have no password until they set one
+  role                AdminRole @default(ADMIN)
+
+  // ---- account status ----
+  isActive            Boolean   @default(false) // becomes true once they set their password
+
+  // ---- invite flow (set-password link) ----
+  inviteToken         String?
+  inviteExpire        DateTime?
+
+  // ---- password reset flow ----
+  resetPasswordToken  String?
+  resetPasswordExpire DateTime?
+
+  articles            News[]
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model GalleryItem {
+  id          String   @id @default(uuid())
+  headline    String?
+  instaUrl    String?
+  description String?
+  coverImage  String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SiteSettings {
+  id        String   @id @default(uuid())
+  siteTitle String
+  contact   String?
+  email     String?
+  instagram String?
+  twitter   String?
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  senderName String
+  email      String?
+  subject    String
+  body       String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+enum EmailPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+enum EmailStatus {
+  QUEUED
+  SENDING
+  SENT
+  FAILED
+}
+
+model EmailQueue {
+  id             String        @id @default(uuid())
+  to             String[]
+  subject        String
+  html           String
+  priority       EmailPriority @default(NORMAL)
+  status         EmailStatus   @default(QUEUED)
+  retryCount     Int           @default(0)
+  maxRetries     Int           @default(5)
+  lastError      String?
+  lastErrorStack String?
+  nextRetryAt    DateTime?
+  sentAt         DateTime?
+  failedAt       DateTime?
+  queuedAt       DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status, nextRetryAt])
+  @@index([priority, queuedAt])
+  @@index([status, createdAt])
+  @@map("email_queue")
+}
+SERVER6_EOF
+
+mkdir -p "prisma/migrations/20260914100000_add_retired_status_and_gk_stats"
+cat > "prisma/migrations/20260914100000_add_retired_status_and_gk_stats/migration.sql" << 'SERVER6_EOF'
+-- Add RETIRED as a valid PlayerStatus so a player who is no longer active
+-- doesn't need a fake "current club" to display correctly.
+ALTER TYPE "PlayerStatus" ADD VALUE 'RETIRED';
+
+-- Goalkeeper-specific stats. Every player still has these columns (default 0)
+-- so no schema branching is needed elsewhere; the frontend decides whether
+-- to show goals/assists or saves/cleanSheets based on the player's position.
+ALTER TABLE "Player" ADD COLUMN "saves" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "Player" ADD COLUMN "cleanSheets" INTEGER NOT NULL DEFAULT 0;
+SERVER6_EOF
+
+mkdir -p "src/controllers"
+cat > "src/controllers/player.controller.ts" << 'SERVER6_EOF'
 import { Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 import { prisma } from "../config/prisma.js";
 import cloudinary from "../config/cloudinary.js";
 import tryCatchWrapper from "../lib/tryCatchWrapper.js";
 import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
-
-// Uploads a single image field (if present in req.files) to Cloudinary and
-// returns its secure URL. Shared by playerPhoto and both club-logo fields so
-// the upload_stream boilerplate isn't repeated for every field.
-async function uploadImageField(
-  req: Request,
-  field: string,
-  folder: string
-): Promise<string | null> {
-  if (!req.files || !req.files[field]) return null;
-
-  const file = (Array.isArray(req.files[field])
-    ? req.files[field][0]
-    : req.files[field]) as UploadedFile;
-
-  const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream({ folder, transformation: [{ width: 400, quality: "auto" }] }, (error, result) => {
-        if (error || !result) reject(error);
-        else resolve(result);
-      })
-      .end(file.data);
-  });
-
-  return result.secure_url;
-}
 
 // GET ALL PLAYERS (public)
 export const getPlayers = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
@@ -115,10 +279,6 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
     playerPhoto = result.secure_url;
   }
 
-  // Club logos: an uploaded file (if provided) wins over a pasted URL.
-  const uploadedCurrentClubLogo = await uploadImageField(req, "currentClubLogo", "udesport/clubs");
-  const uploadedNewClubLogo = await uploadImageField(req, "newClubLogo", "udesport/clubs");
-
   const player = await prisma.player.create({
     data: {
       playerName,
@@ -136,9 +296,9 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
       cleanSheets: cleanSheets ? Number(cleanSheets) : 0,
       rating: rating ? Number(rating) : null,
       currentClubName: currentClubName || null,
-      currentClubLogo: uploadedCurrentClubLogo || currentClubLogo || null,
+      currentClubLogo: currentClubLogo || null,
       newClubName: newClubName || null,
-      newClubLogo: uploadedNewClubLogo || newClubLogo || null,
+      newClubLogo: newClubLogo || null,
       playerHistory: playerHistory || null,
       playerAppearance: playerAppearance ? Number(playerAppearance) : 0,
       isFeatured: isFeatured === "true" || isFeatured === true ? true : false,
@@ -206,12 +366,6 @@ export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response):
     playerPhoto = result.secure_url;
   }
 
-  // Club logos: an uploaded file (if provided) wins over a pasted URL;
-  // otherwise fall back to whatever was sent as a plain string (or leave
-  // untouched, same as every other field, if nothing was sent at all).
-  const uploadedCurrentClubLogo = await uploadImageField(req, "currentClubLogo", "udesport/clubs");
-  const uploadedNewClubLogo = await uploadImageField(req, "newClubLogo", "udesport/clubs");
-
   // Prisma ignores `undefined`, so unsent fields stay untouched
   const player = await prisma.player.update({
     where: { id: req.params.id as string },
@@ -231,9 +385,9 @@ export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response):
       cleanSheets: cleanSheets !== undefined ? Number(cleanSheets) : undefined,
       rating: rating !== undefined ? Number(rating) : undefined,
       currentClubName: currentClubName ?? undefined,
-      currentClubLogo: uploadedCurrentClubLogo ?? currentClubLogo ?? undefined,
+      currentClubLogo: currentClubLogo ?? undefined,
       newClubName: newClubName ?? undefined,
-      newClubLogo: uploadedNewClubLogo ?? newClubLogo ?? undefined,
+      newClubLogo: newClubLogo ?? undefined,
       playerHistory: playerHistory ?? undefined,
       playerAppearance: playerAppearance !== undefined ? Number(playerAppearance) : undefined,
       isFeatured:
@@ -320,3 +474,10 @@ export const getDashboardStats = tryCatchWrapper(async (req: Request, res: Respo
     },
   });
 });
+SERVER6_EOF
+
+echo "Done writing files."
+echo "IMPORTANT: this adds a real database migration. After reviewing the diff, run:"
+echo "  npx prisma migrate deploy   (applies it to your database)"
+echo "  npx prisma generate          (regenerates the Prisma client with the new fields)"
+echo "  npx tsc --noEmit             (verify types)"

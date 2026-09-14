@@ -1,3 +1,10 @@
+#!/bin/bash
+set -e
+
+echo "Applying server-script7: adds Cloudinary upload support for club logos (currentClubLogo / newClubLogo), mirroring the existing playerPhoto upload. An uploaded file wins over a pasted URL; a pasted URL still works on its own, same as before."
+
+mkdir -p "src/controllers"
+cat > "src/controllers/player.controller.ts" << 'UDESPORT_EOF_MARKER'
 import { Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 import { prisma } from "../config/prisma.js";
@@ -320,3 +327,6 @@ export const getDashboardStats = tryCatchWrapper(async (req: Request, res: Respo
     },
   });
 });
+UDESPORT_EOF_MARKER
+
+echo "Done writing files. No schema/migration changes in this script -- just run: npx tsc --noEmit to verify."
