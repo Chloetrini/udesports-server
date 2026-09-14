@@ -50,6 +50,7 @@ model Player {
   playerHistory   String?
   playerAppearance Int         @default(0)
   isFeatured      Boolean      @default(false)
+  published       Boolean      @default(true)
 
   featuredIn      News[]
   createdAt       DateTime     @default(now())

@@ -30,6 +30,8 @@ export type PlayerAvgAggregateOutputType = {
   height: number | null
   goals: number | null
   assists: number | null
+  saves: number | null
+  cleanSheets: number | null
   rating: number | null
   playerAppearance: number | null
 }
@@ -38,6 +40,8 @@ export type PlayerSumAggregateOutputType = {
   height: number | null
   goals: number | null
   assists: number | null
+  saves: number | null
+  cleanSheets: number | null
   rating: number | null
   playerAppearance: number | null
 }
@@ -56,6 +60,8 @@ export type PlayerMinAggregateOutputType = {
   position: string | null
   goals: number | null
   assists: number | null
+  saves: number | null
+  cleanSheets: number | null
   rating: number | null
   currentClubName: string | null
   currentClubLogo: string | null
@@ -64,6 +70,7 @@ export type PlayerMinAggregateOutputType = {
   playerHistory: string | null
   playerAppearance: number | null
   isFeatured: boolean | null
+  published: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -82,6 +89,8 @@ export type PlayerMaxAggregateOutputType = {
   position: string | null
   goals: number | null
   assists: number | null
+  saves: number | null
+  cleanSheets: number | null
   rating: number | null
   currentClubName: string | null
   currentClubLogo: string | null
@@ -90,6 +99,7 @@ export type PlayerMaxAggregateOutputType = {
   playerHistory: string | null
   playerAppearance: number | null
   isFeatured: boolean | null
+  published: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -108,6 +118,8 @@ export type PlayerCountAggregateOutputType = {
   position: number
   goals: number
   assists: number
+  saves: number
+  cleanSheets: number
   rating: number
   currentClubName: number
   currentClubLogo: number
@@ -116,6 +128,7 @@ export type PlayerCountAggregateOutputType = {
   playerHistory: number
   playerAppearance: number
   isFeatured: number
+  published: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -126,6 +139,8 @@ export type PlayerAvgAggregateInputType = {
   height?: true
   goals?: true
   assists?: true
+  saves?: true
+  cleanSheets?: true
   rating?: true
   playerAppearance?: true
 }
@@ -134,6 +149,8 @@ export type PlayerSumAggregateInputType = {
   height?: true
   goals?: true
   assists?: true
+  saves?: true
+  cleanSheets?: true
   rating?: true
   playerAppearance?: true
 }
@@ -152,6 +169,8 @@ export type PlayerMinAggregateInputType = {
   position?: true
   goals?: true
   assists?: true
+  saves?: true
+  cleanSheets?: true
   rating?: true
   currentClubName?: true
   currentClubLogo?: true
@@ -160,6 +179,7 @@ export type PlayerMinAggregateInputType = {
   playerHistory?: true
   playerAppearance?: true
   isFeatured?: true
+  published?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -178,6 +198,8 @@ export type PlayerMaxAggregateInputType = {
   position?: true
   goals?: true
   assists?: true
+  saves?: true
+  cleanSheets?: true
   rating?: true
   currentClubName?: true
   currentClubLogo?: true
@@ -186,6 +208,7 @@ export type PlayerMaxAggregateInputType = {
   playerHistory?: true
   playerAppearance?: true
   isFeatured?: true
+  published?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -204,6 +227,8 @@ export type PlayerCountAggregateInputType = {
   position?: true
   goals?: true
   assists?: true
+  saves?: true
+  cleanSheets?: true
   rating?: true
   currentClubName?: true
   currentClubLogo?: true
@@ -212,6 +237,7 @@ export type PlayerCountAggregateInputType = {
   playerHistory?: true
   playerAppearance?: true
   isFeatured?: true
+  published?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -317,6 +343,8 @@ export type PlayerGroupByOutputType = {
   position: string
   goals: number
   assists: number
+  saves: number
+  cleanSheets: number
   rating: number | null
   currentClubName: string | null
   currentClubLogo: string | null
@@ -325,6 +353,7 @@ export type PlayerGroupByOutputType = {
   playerHistory: string | null
   playerAppearance: number
   isFeatured: boolean
+  published: boolean
   createdAt: Date
   updatedAt: Date
   _count: PlayerCountAggregateOutputType | null
@@ -366,6 +395,8 @@ export type PlayerWhereInput = {
   position?: Prisma.StringFilter<"Player"> | string
   goals?: Prisma.IntFilter<"Player"> | number
   assists?: Prisma.IntFilter<"Player"> | number
+  saves?: Prisma.IntFilter<"Player"> | number
+  cleanSheets?: Prisma.IntFilter<"Player"> | number
   rating?: Prisma.IntNullableFilter<"Player"> | number | null
   currentClubName?: Prisma.StringNullableFilter<"Player"> | string | null
   currentClubLogo?: Prisma.StringNullableFilter<"Player"> | string | null
@@ -374,6 +405,7 @@ export type PlayerWhereInput = {
   playerHistory?: Prisma.StringNullableFilter<"Player"> | string | null
   playerAppearance?: Prisma.IntFilter<"Player"> | number
   isFeatured?: Prisma.BoolFilter<"Player"> | boolean
+  published?: Prisma.BoolFilter<"Player"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Player"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Player"> | Date | string
   featuredIn?: Prisma.NewsListRelationFilter
@@ -393,6 +425,8 @@ export type PlayerOrderByWithRelationInput = {
   position?: Prisma.SortOrder
   goals?: Prisma.SortOrder
   assists?: Prisma.SortOrder
+  saves?: Prisma.SortOrder
+  cleanSheets?: Prisma.SortOrder
   rating?: Prisma.SortOrderInput | Prisma.SortOrder
   currentClubName?: Prisma.SortOrderInput | Prisma.SortOrder
   currentClubLogo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -401,6 +435,7 @@ export type PlayerOrderByWithRelationInput = {
   playerHistory?: Prisma.SortOrderInput | Prisma.SortOrder
   playerAppearance?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  published?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   featuredIn?: Prisma.NewsOrderByRelationAggregateInput
@@ -423,6 +458,8 @@ export type PlayerWhereUniqueInput = Prisma.AtLeast<{
   position?: Prisma.StringFilter<"Player"> | string
   goals?: Prisma.IntFilter<"Player"> | number
   assists?: Prisma.IntFilter<"Player"> | number
+  saves?: Prisma.IntFilter<"Player"> | number
+  cleanSheets?: Prisma.IntFilter<"Player"> | number
   rating?: Prisma.IntNullableFilter<"Player"> | number | null
   currentClubName?: Prisma.StringNullableFilter<"Player"> | string | null
   currentClubLogo?: Prisma.StringNullableFilter<"Player"> | string | null
@@ -431,6 +468,7 @@ export type PlayerWhereUniqueInput = Prisma.AtLeast<{
   playerHistory?: Prisma.StringNullableFilter<"Player"> | string | null
   playerAppearance?: Prisma.IntFilter<"Player"> | number
   isFeatured?: Prisma.BoolFilter<"Player"> | boolean
+  published?: Prisma.BoolFilter<"Player"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Player"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Player"> | Date | string
   featuredIn?: Prisma.NewsListRelationFilter
@@ -450,6 +488,8 @@ export type PlayerOrderByWithAggregationInput = {
   position?: Prisma.SortOrder
   goals?: Prisma.SortOrder
   assists?: Prisma.SortOrder
+  saves?: Prisma.SortOrder
+  cleanSheets?: Prisma.SortOrder
   rating?: Prisma.SortOrderInput | Prisma.SortOrder
   currentClubName?: Prisma.SortOrderInput | Prisma.SortOrder
   currentClubLogo?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -458,6 +498,7 @@ export type PlayerOrderByWithAggregationInput = {
   playerHistory?: Prisma.SortOrderInput | Prisma.SortOrder
   playerAppearance?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  published?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PlayerCountOrderByAggregateInput
@@ -484,6 +525,8 @@ export type PlayerScalarWhereWithAggregatesInput = {
   position?: Prisma.StringWithAggregatesFilter<"Player"> | string
   goals?: Prisma.IntWithAggregatesFilter<"Player"> | number
   assists?: Prisma.IntWithAggregatesFilter<"Player"> | number
+  saves?: Prisma.IntWithAggregatesFilter<"Player"> | number
+  cleanSheets?: Prisma.IntWithAggregatesFilter<"Player"> | number
   rating?: Prisma.IntNullableWithAggregatesFilter<"Player"> | number | null
   currentClubName?: Prisma.StringNullableWithAggregatesFilter<"Player"> | string | null
   currentClubLogo?: Prisma.StringNullableWithAggregatesFilter<"Player"> | string | null
@@ -492,6 +535,7 @@ export type PlayerScalarWhereWithAggregatesInput = {
   playerHistory?: Prisma.StringNullableWithAggregatesFilter<"Player"> | string | null
   playerAppearance?: Prisma.IntWithAggregatesFilter<"Player"> | number
   isFeatured?: Prisma.BoolWithAggregatesFilter<"Player"> | boolean
+  published?: Prisma.BoolWithAggregatesFilter<"Player"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Player"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Player"> | Date | string
 }
@@ -510,6 +554,8 @@ export type PlayerCreateInput = {
   position: string
   goals?: number
   assists?: number
+  saves?: number
+  cleanSheets?: number
   rating?: number | null
   currentClubName?: string | null
   currentClubLogo?: string | null
@@ -518,6 +564,7 @@ export type PlayerCreateInput = {
   playerHistory?: string | null
   playerAppearance?: number
   isFeatured?: boolean
+  published?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   featuredIn?: Prisma.NewsCreateNestedManyWithoutFeaturedPlayerInput
@@ -537,6 +584,8 @@ export type PlayerUncheckedCreateInput = {
   position: string
   goals?: number
   assists?: number
+  saves?: number
+  cleanSheets?: number
   rating?: number | null
   currentClubName?: string | null
   currentClubLogo?: string | null
@@ -545,6 +594,7 @@ export type PlayerUncheckedCreateInput = {
   playerHistory?: string | null
   playerAppearance?: number
   isFeatured?: boolean
+  published?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   featuredIn?: Prisma.NewsUncheckedCreateNestedManyWithoutFeaturedPlayerInput
@@ -564,6 +614,8 @@ export type PlayerUpdateInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   goals?: Prisma.IntFieldUpdateOperationsInput | number
   assists?: Prisma.IntFieldUpdateOperationsInput | number
+  saves?: Prisma.IntFieldUpdateOperationsInput | number
+  cleanSheets?: Prisma.IntFieldUpdateOperationsInput | number
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   currentClubName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentClubLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -572,6 +624,7 @@ export type PlayerUpdateInput = {
   playerHistory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   playerAppearance?: Prisma.IntFieldUpdateOperationsInput | number
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   featuredIn?: Prisma.NewsUpdateManyWithoutFeaturedPlayerNestedInput
@@ -591,6 +644,8 @@ export type PlayerUncheckedUpdateInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   goals?: Prisma.IntFieldUpdateOperationsInput | number
   assists?: Prisma.IntFieldUpdateOperationsInput | number
+  saves?: Prisma.IntFieldUpdateOperationsInput | number
+  cleanSheets?: Prisma.IntFieldUpdateOperationsInput | number
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   currentClubName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentClubLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -599,6 +654,7 @@ export type PlayerUncheckedUpdateInput = {
   playerHistory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   playerAppearance?: Prisma.IntFieldUpdateOperationsInput | number
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   featuredIn?: Prisma.NewsUncheckedUpdateManyWithoutFeaturedPlayerNestedInput
@@ -618,6 +674,8 @@ export type PlayerCreateManyInput = {
   position: string
   goals?: number
   assists?: number
+  saves?: number
+  cleanSheets?: number
   rating?: number | null
   currentClubName?: string | null
   currentClubLogo?: string | null
@@ -626,6 +684,7 @@ export type PlayerCreateManyInput = {
   playerHistory?: string | null
   playerAppearance?: number
   isFeatured?: boolean
+  published?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -644,6 +703,8 @@ export type PlayerUpdateManyMutationInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   goals?: Prisma.IntFieldUpdateOperationsInput | number
   assists?: Prisma.IntFieldUpdateOperationsInput | number
+  saves?: Prisma.IntFieldUpdateOperationsInput | number
+  cleanSheets?: Prisma.IntFieldUpdateOperationsInput | number
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   currentClubName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentClubLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -652,6 +713,7 @@ export type PlayerUpdateManyMutationInput = {
   playerHistory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   playerAppearance?: Prisma.IntFieldUpdateOperationsInput | number
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -670,6 +732,8 @@ export type PlayerUncheckedUpdateManyInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   goals?: Prisma.IntFieldUpdateOperationsInput | number
   assists?: Prisma.IntFieldUpdateOperationsInput | number
+  saves?: Prisma.IntFieldUpdateOperationsInput | number
+  cleanSheets?: Prisma.IntFieldUpdateOperationsInput | number
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   currentClubName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentClubLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -678,6 +742,7 @@ export type PlayerUncheckedUpdateManyInput = {
   playerHistory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   playerAppearance?: Prisma.IntFieldUpdateOperationsInput | number
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -696,6 +761,8 @@ export type PlayerCountOrderByAggregateInput = {
   position?: Prisma.SortOrder
   goals?: Prisma.SortOrder
   assists?: Prisma.SortOrder
+  saves?: Prisma.SortOrder
+  cleanSheets?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   currentClubName?: Prisma.SortOrder
   currentClubLogo?: Prisma.SortOrder
@@ -704,6 +771,7 @@ export type PlayerCountOrderByAggregateInput = {
   playerHistory?: Prisma.SortOrder
   playerAppearance?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  published?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -712,6 +780,8 @@ export type PlayerAvgOrderByAggregateInput = {
   height?: Prisma.SortOrder
   goals?: Prisma.SortOrder
   assists?: Prisma.SortOrder
+  saves?: Prisma.SortOrder
+  cleanSheets?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   playerAppearance?: Prisma.SortOrder
 }
@@ -730,6 +800,8 @@ export type PlayerMaxOrderByAggregateInput = {
   position?: Prisma.SortOrder
   goals?: Prisma.SortOrder
   assists?: Prisma.SortOrder
+  saves?: Prisma.SortOrder
+  cleanSheets?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   currentClubName?: Prisma.SortOrder
   currentClubLogo?: Prisma.SortOrder
@@ -738,6 +810,7 @@ export type PlayerMaxOrderByAggregateInput = {
   playerHistory?: Prisma.SortOrder
   playerAppearance?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  published?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -756,6 +829,8 @@ export type PlayerMinOrderByAggregateInput = {
   position?: Prisma.SortOrder
   goals?: Prisma.SortOrder
   assists?: Prisma.SortOrder
+  saves?: Prisma.SortOrder
+  cleanSheets?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   currentClubName?: Prisma.SortOrder
   currentClubLogo?: Prisma.SortOrder
@@ -764,6 +839,7 @@ export type PlayerMinOrderByAggregateInput = {
   playerHistory?: Prisma.SortOrder
   playerAppearance?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
+  published?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -772,6 +848,8 @@ export type PlayerSumOrderByAggregateInput = {
   height?: Prisma.SortOrder
   goals?: Prisma.SortOrder
   assists?: Prisma.SortOrder
+  saves?: Prisma.SortOrder
+  cleanSheets?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   playerAppearance?: Prisma.SortOrder
 }
@@ -847,6 +925,8 @@ export type PlayerCreateWithoutFeaturedInInput = {
   position: string
   goals?: number
   assists?: number
+  saves?: number
+  cleanSheets?: number
   rating?: number | null
   currentClubName?: string | null
   currentClubLogo?: string | null
@@ -855,6 +935,7 @@ export type PlayerCreateWithoutFeaturedInInput = {
   playerHistory?: string | null
   playerAppearance?: number
   isFeatured?: boolean
+  published?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -873,6 +954,8 @@ export type PlayerUncheckedCreateWithoutFeaturedInInput = {
   position: string
   goals?: number
   assists?: number
+  saves?: number
+  cleanSheets?: number
   rating?: number | null
   currentClubName?: string | null
   currentClubLogo?: string | null
@@ -881,6 +964,7 @@ export type PlayerUncheckedCreateWithoutFeaturedInInput = {
   playerHistory?: string | null
   playerAppearance?: number
   isFeatured?: boolean
+  published?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -915,6 +999,8 @@ export type PlayerUpdateWithoutFeaturedInInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   goals?: Prisma.IntFieldUpdateOperationsInput | number
   assists?: Prisma.IntFieldUpdateOperationsInput | number
+  saves?: Prisma.IntFieldUpdateOperationsInput | number
+  cleanSheets?: Prisma.IntFieldUpdateOperationsInput | number
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   currentClubName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentClubLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -923,6 +1009,7 @@ export type PlayerUpdateWithoutFeaturedInInput = {
   playerHistory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   playerAppearance?: Prisma.IntFieldUpdateOperationsInput | number
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -941,6 +1028,8 @@ export type PlayerUncheckedUpdateWithoutFeaturedInInput = {
   position?: Prisma.StringFieldUpdateOperationsInput | string
   goals?: Prisma.IntFieldUpdateOperationsInput | number
   assists?: Prisma.IntFieldUpdateOperationsInput | number
+  saves?: Prisma.IntFieldUpdateOperationsInput | number
+  cleanSheets?: Prisma.IntFieldUpdateOperationsInput | number
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   currentClubName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentClubLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -949,6 +1038,7 @@ export type PlayerUncheckedUpdateWithoutFeaturedInInput = {
   playerHistory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   playerAppearance?: Prisma.IntFieldUpdateOperationsInput | number
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -998,6 +1088,8 @@ export type PlayerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   position?: boolean
   goals?: boolean
   assists?: boolean
+  saves?: boolean
+  cleanSheets?: boolean
   rating?: boolean
   currentClubName?: boolean
   currentClubLogo?: boolean
@@ -1006,6 +1098,7 @@ export type PlayerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   playerHistory?: boolean
   playerAppearance?: boolean
   isFeatured?: boolean
+  published?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   featuredIn?: boolean | Prisma.Player$featuredInArgs<ExtArgs>
@@ -1026,6 +1119,8 @@ export type PlayerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   position?: boolean
   goals?: boolean
   assists?: boolean
+  saves?: boolean
+  cleanSheets?: boolean
   rating?: boolean
   currentClubName?: boolean
   currentClubLogo?: boolean
@@ -1034,6 +1129,7 @@ export type PlayerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   playerHistory?: boolean
   playerAppearance?: boolean
   isFeatured?: boolean
+  published?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["player"]>
@@ -1052,6 +1148,8 @@ export type PlayerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   position?: boolean
   goals?: boolean
   assists?: boolean
+  saves?: boolean
+  cleanSheets?: boolean
   rating?: boolean
   currentClubName?: boolean
   currentClubLogo?: boolean
@@ -1060,6 +1158,7 @@ export type PlayerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   playerHistory?: boolean
   playerAppearance?: boolean
   isFeatured?: boolean
+  published?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["player"]>
@@ -1078,6 +1177,8 @@ export type PlayerSelectScalar = {
   position?: boolean
   goals?: boolean
   assists?: boolean
+  saves?: boolean
+  cleanSheets?: boolean
   rating?: boolean
   currentClubName?: boolean
   currentClubLogo?: boolean
@@ -1086,11 +1187,12 @@ export type PlayerSelectScalar = {
   playerHistory?: boolean
   playerAppearance?: boolean
   isFeatured?: boolean
+  published?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "playerName" | "playerFullName" | "playerPhoto" | "DOB" | "nationality" | "height" | "preferredFoot" | "ageGroup" | "status" | "position" | "goals" | "assists" | "rating" | "currentClubName" | "currentClubLogo" | "newClubName" | "newClubLogo" | "playerHistory" | "playerAppearance" | "isFeatured" | "createdAt" | "updatedAt", ExtArgs["result"]["player"]>
+export type PlayerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "playerName" | "playerFullName" | "playerPhoto" | "DOB" | "nationality" | "height" | "preferredFoot" | "ageGroup" | "status" | "position" | "goals" | "assists" | "saves" | "cleanSheets" | "rating" | "currentClubName" | "currentClubLogo" | "newClubName" | "newClubLogo" | "playerHistory" | "playerAppearance" | "isFeatured" | "published" | "createdAt" | "updatedAt", ExtArgs["result"]["player"]>
 export type PlayerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   featuredIn?: boolean | Prisma.Player$featuredInArgs<ExtArgs>
   _count?: boolean | Prisma.PlayerCountOutputTypeDefaultArgs<ExtArgs>
@@ -1117,6 +1219,8 @@ export type $PlayerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     position: string
     goals: number
     assists: number
+    saves: number
+    cleanSheets: number
     rating: number | null
     currentClubName: string | null
     currentClubLogo: string | null
@@ -1125,6 +1229,7 @@ export type $PlayerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     playerHistory: string | null
     playerAppearance: number
     isFeatured: boolean
+    published: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["player"]>
@@ -1564,6 +1669,8 @@ export interface PlayerFieldRefs {
   readonly position: Prisma.FieldRef<"Player", 'String'>
   readonly goals: Prisma.FieldRef<"Player", 'Int'>
   readonly assists: Prisma.FieldRef<"Player", 'Int'>
+  readonly saves: Prisma.FieldRef<"Player", 'Int'>
+  readonly cleanSheets: Prisma.FieldRef<"Player", 'Int'>
   readonly rating: Prisma.FieldRef<"Player", 'Int'>
   readonly currentClubName: Prisma.FieldRef<"Player", 'String'>
   readonly currentClubLogo: Prisma.FieldRef<"Player", 'String'>
@@ -1572,6 +1679,7 @@ export interface PlayerFieldRefs {
   readonly playerHistory: Prisma.FieldRef<"Player", 'String'>
   readonly playerAppearance: Prisma.FieldRef<"Player", 'Int'>
   readonly isFeatured: Prisma.FieldRef<"Player", 'Boolean'>
+  readonly published: Prisma.FieldRef<"Player", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Player", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Player", 'DateTime'>
 }

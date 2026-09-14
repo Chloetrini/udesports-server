@@ -90,6 +90,8 @@ export const PlayerScalarFieldEnum = {
   position: 'position',
   goals: 'goals',
   assists: 'assists',
+  saves: 'saves',
+  cleanSheets: 'cleanSheets',
   rating: 'rating',
   currentClubName: 'currentClubName',
   currentClubLogo: 'currentClubLogo',
@@ -98,6 +100,7 @@ export const PlayerScalarFieldEnum = {
   playerHistory: 'playerHistory',
   playerAppearance: 'playerAppearance',
   isFeatured: 'isFeatured',
+  published: 'published',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

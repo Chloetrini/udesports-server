@@ -1,3 +1,188 @@
+#!/bin/bash
+set -e
+
+echo 'Applying server-script8: real publish/draft support for players (new published column + migration + admin list route)...'
+
+mkdir -p "$(dirname 'prisma/schema.prisma')"
+cat > 'prisma/schema.prisma' << 'UDESPORT_SRV_EOF_0_6'
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PlayerStatus {
+  FREE
+  TRANSFERRED
+  NEGOTIATION
+  RETIRED
+}
+
+enum NewsCategory {
+  TRANSFER
+  ACADEMY
+  ANNOUNCEMENT
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  SUB_ADMIN
+}
+
+model Player {
+  id              String       @id @default(uuid())
+  playerName      String
+  playerFullName  String?
+  playerPhoto     String?
+  DOB             DateTime
+  nationality     String
+  height          Int?
+  preferredFoot   String
+  ageGroup        String
+  status          PlayerStatus @default(FREE)
+  position        String
+  goals           Int          @default(0)
+  assists         Int          @default(0)
+  saves           Int          @default(0)
+  cleanSheets     Int          @default(0)
+  rating          Int?
+  currentClubName String?
+  currentClubLogo String?
+  newClubName     String?
+  newClubLogo     String?
+  playerHistory   String?
+  playerAppearance Int         @default(0)
+  isFeatured      Boolean      @default(false)
+  published       Boolean      @default(true)
+
+  featuredIn      News[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+model News {
+  id               String       @id @default(uuid())
+  headline         String
+  category         NewsCategory
+  summary          String?
+  body             String
+  coverImage       String?
+  published        Boolean      @default(false)
+  featuredPlayer   Player?      @relation(fields: [featuredPlayerId], references: [id])
+  featuredPlayerId String?
+  author           Admin        @relation(fields: [authorId], references: [id])
+  authorId         String
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model Admin {
+  id                  String    @id @default(uuid())
+  name                String
+  email               String    @unique
+  password            String?   // nullable — invited admins have no password until they set one
+  role                AdminRole @default(ADMIN)
+
+  // ---- account status ----
+  isActive            Boolean   @default(false) // becomes true once they set their password
+
+  // ---- invite flow (set-password link) ----
+  inviteToken         String?
+  inviteExpire        DateTime?
+
+  // ---- password reset flow ----
+  resetPasswordToken  String?
+  resetPasswordExpire DateTime?
+
+  articles            News[]
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model GalleryItem {
+  id          String   @id @default(uuid())
+  headline    String?
+  instaUrl    String?
+  description String?
+  coverImage  String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SiteSettings {
+  id        String   @id @default(uuid())
+  siteTitle String
+  contact   String?
+  email     String?
+  instagram String?
+  twitter   String?
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  senderName String
+  email      String?
+  subject    String
+  body       String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+enum EmailPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+enum EmailStatus {
+  QUEUED
+  SENDING
+  SENT
+  FAILED
+}
+
+model EmailQueue {
+  id             String        @id @default(uuid())
+  to             String[]
+  subject        String
+  html           String
+  priority       EmailPriority @default(NORMAL)
+  status         EmailStatus   @default(QUEUED)
+  retryCount     Int           @default(0)
+  maxRetries     Int           @default(5)
+  lastError      String?
+  lastErrorStack String?
+  nextRetryAt    DateTime?
+  sentAt         DateTime?
+  failedAt       DateTime?
+  queuedAt       DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status, nextRetryAt])
+  @@index([priority, queuedAt])
+  @@index([status, createdAt])
+  @@map("email_queue")
+}
+UDESPORT_SRV_EOF_0_6
+
+mkdir -p "$(dirname 'prisma/migrations/20260914140000_add_player_published/migration.sql')"
+cat > 'prisma/migrations/20260914140000_add_player_published/migration.sql' << 'UDESPORT_SRV_EOF_1_6'
+-- Real draft/publish support for players. Previously "Save as Draft" in the
+-- admin form didn't actually save anything — this column is what makes
+-- draft vs. published a real, queryable state instead of a no-op button.
+-- Existing players default to true so nothing currently live disappears
+-- from the public site once this migration is applied.
+ALTER TABLE "Player" ADD COLUMN "published" BOOLEAN NOT NULL DEFAULT true;
+UDESPORT_SRV_EOF_1_6
+
+mkdir -p "$(dirname 'src/controllers/player.controller.ts')"
+cat > 'src/controllers/player.controller.ts' << 'UDESPORT_SRV_EOF_2_6'
 import { Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";
 import { prisma } from "../config/prisma.js";
@@ -343,3 +528,42 @@ export const getDashboardStats = tryCatchWrapper(async (req: Request, res: Respo
     },
   });
 });
+UDESPORT_SRV_EOF_2_6
+
+mkdir -p "$(dirname 'src/routes/player.routes.ts')"
+cat > 'src/routes/player.routes.ts' << 'UDESPORT_SRV_EOF_3_6'
+import { Router } from "express";
+import {
+  getPlayers,
+  getPlayersAdmin,
+  getPlayer,
+  createPlayer,
+  updatePlayer,
+  deletePlayer,
+  getDashboardStats,
+} from "../controllers/player.controller.js";
+import { protect, authorize } from "../middlewares/auth.middleware.js";
+import { cacheMiddleware, invalidateCache } from "../middlewares/cache.middleware.js";
+
+const router = Router();
+
+// PUBLIC ROUTES (anyone can view — your live website; published players only)
+router.get("/", cacheMiddleware("players", 60), getPlayers);
+router.get("/:id", cacheMiddleware("players", 60), getPlayer);
+
+// PROTECTED ROUTES (logged-in admins only)
+router.get("/admin/all", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), getPlayersAdmin);
+router.get("/stats/overview", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), getDashboardStats);
+router.post("/", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("players"), createPlayer);
+router.put("/:id", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("players"), updatePlayer);
+router.delete("/:id", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("players"), deletePlayer);
+
+export default router;
+UDESPORT_SRV_EOF_3_6
+
+echo 'Done.'
+echo ''
+echo 'Next steps (same as the last migration):'
+echo '  1. npx prisma migrate deploy   # applies the new published column to the live DB'
+echo '  2. npx prisma generate          # regenerates the Prisma client'
+echo '  3. npx tsc --noEmit             # sanity check'
