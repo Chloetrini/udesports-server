@@ -253,6 +253,23 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
+export type EnumQuickUpdateCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuickUpdateCategory | Prisma.EnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel> | $Enums.QuickUpdateCategory
+}
+
+export type EnumQuickUpdateCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuickUpdateCategory | Prisma.EnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuickUpdateCategoryWithAggregatesFilter<$PrismaModel> | $Enums.QuickUpdateCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel>
+}
+
 export type EnumEmailPriorityFilter<$PrismaModel = never> = {
   equals?: $Enums.EmailPriority | Prisma.EnumEmailPriorityFieldRefInput<$PrismaModel>
   in?: $Enums.EmailPriority[] | Prisma.ListEnumEmailPriorityFieldRefInput<$PrismaModel>
@@ -537,6 +554,23 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumQuickUpdateCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuickUpdateCategory | Prisma.EnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel> | $Enums.QuickUpdateCategory
+}
+
+export type NestedEnumQuickUpdateCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuickUpdateCategory | Prisma.EnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuickUpdateCategory[] | Prisma.ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuickUpdateCategoryWithAggregatesFilter<$PrismaModel> | $Enums.QuickUpdateCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel>
 }
 
 export type NestedEnumEmailPriorityFilter<$PrismaModel = never> = {

@@ -54,6 +54,7 @@ export const ModelName = {
   Player: 'Player',
   News: 'News',
   Admin: 'Admin',
+  QuickUpdate: 'QuickUpdate',
   GalleryItem: 'GalleryItem',
   SiteSettings: 'SiteSettings',
   Notification: 'Notification',
@@ -141,6 +142,19 @@ export const AdminScalarFieldEnum = {
 } as const
 
 export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof AdminScalarFieldEnum]
+
+
+export const QuickUpdateScalarFieldEnum = {
+  id: 'id',
+  headline: 'headline',
+  category: 'category',
+  published: 'published',
+  authorId: 'authorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QuickUpdateScalarFieldEnum = (typeof QuickUpdateScalarFieldEnum)[keyof typeof QuickUpdateScalarFieldEnum]
 
 
 export const GalleryItemScalarFieldEnum = {

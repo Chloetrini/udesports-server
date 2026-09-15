@@ -28,6 +28,17 @@ export const NewsCategory = {
 export type NewsCategory = (typeof NewsCategory)[keyof typeof NewsCategory]
 
 
+export const QuickUpdateCategory = {
+  TRANSFER: 'TRANSFER',
+  ACADEMY: 'ACADEMY',
+  ANNOUNCEMENT: 'ANNOUNCEMENT',
+  MILESTONE: 'MILESTONE',
+  INTERNATIONAL: 'INTERNATIONAL'
+} as const
+
+export type QuickUpdateCategory = (typeof QuickUpdateCategory)[keyof typeof QuickUpdateCategory]
+
+
 export const AdminRole = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',

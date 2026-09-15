@@ -22,6 +22,7 @@ import settingsRoutes from './routes/settings.routes.js'
 import galleryRoutes from './routes/gallery.routes.js'
 import notificationRoutes from './routes/notification.routes.js'
 import emailRoutes from './routes/email.routes.js'
+import quickUpdateRoutes from './routes/quickUpdate.routes.js'
 
 // Extend express-session with UDESport's admin session shape
 declare module 'express-session' {
@@ -76,6 +77,7 @@ app.use('/api/news', newsRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/gallery', galleryRoutes)
 app.use('/api/notifications', notificationRoutes)
+app.use('/api/quick-updates', quickUpdateRoutes)
 
 app.get('/api/health', (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'UDESport API is running' })

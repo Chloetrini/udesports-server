@@ -33,6 +33,11 @@ export type News = Prisma.NewsModel
  */
 export type Admin = Prisma.AdminModel
 /**
+ * Model QuickUpdate
+ * 
+ */
+export type QuickUpdate = Prisma.QuickUpdateModel
+/**
  * Model GalleryItem
  * 
  */

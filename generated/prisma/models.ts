@@ -11,6 +11,7 @@
 export type * from './models/Player'
 export type * from './models/News'
 export type * from './models/Admin'
+export type * from './models/QuickUpdate'
 export type * from './models/GalleryItem'
 export type * from './models/SiteSettings'
 export type * from './models/Notification'

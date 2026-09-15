@@ -387,6 +387,7 @@ export const ModelName = {
   Player: 'Player',
   News: 'News',
   Admin: 'Admin',
+  QuickUpdate: 'QuickUpdate',
   GalleryItem: 'GalleryItem',
   SiteSettings: 'SiteSettings',
   Notification: 'Notification',
@@ -406,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "player" | "news" | "admin" | "galleryItem" | "siteSettings" | "notification" | "emailQueue"
+    modelProps: "player" | "news" | "admin" | "quickUpdate" | "galleryItem" | "siteSettings" | "notification" | "emailQueue"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -629,6 +630,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.AdminCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AdminCountAggregateOutputType> | number
+        }
+      }
+    }
+    QuickUpdate: {
+      payload: Prisma.$QuickUpdatePayload<ExtArgs>
+      fields: Prisma.QuickUpdateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.QuickUpdateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.QuickUpdateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>
+        }
+        findFirst: {
+          args: Prisma.QuickUpdateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.QuickUpdateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>
+        }
+        findMany: {
+          args: Prisma.QuickUpdateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>[]
+        }
+        create: {
+          args: Prisma.QuickUpdateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>
+        }
+        createMany: {
+          args: Prisma.QuickUpdateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.QuickUpdateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>[]
+        }
+        delete: {
+          args: Prisma.QuickUpdateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>
+        }
+        update: {
+          args: Prisma.QuickUpdateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>
+        }
+        deleteMany: {
+          args: Prisma.QuickUpdateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.QuickUpdateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.QuickUpdateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>[]
+        }
+        upsert: {
+          args: Prisma.QuickUpdateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuickUpdatePayload>
+        }
+        aggregate: {
+          args: Prisma.QuickUpdateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQuickUpdate>
+        }
+        groupBy: {
+          args: Prisma.QuickUpdateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QuickUpdateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.QuickUpdateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QuickUpdateCountAggregateOutputType> | number
         }
       }
     }
@@ -1034,6 +1109,19 @@ export const AdminScalarFieldEnum = {
 export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof AdminScalarFieldEnum]
 
 
+export const QuickUpdateScalarFieldEnum = {
+  id: 'id',
+  headline: 'headline',
+  category: 'category',
+  published: 'published',
+  authorId: 'authorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QuickUpdateScalarFieldEnum = (typeof QuickUpdateScalarFieldEnum)[keyof typeof QuickUpdateScalarFieldEnum]
+
+
 export const GalleryItemScalarFieldEnum = {
   id: 'id',
   headline: 'headline',
@@ -1218,6 +1306,20 @@ export type ListEnumAdminRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
+ * Reference to a field of type 'QuickUpdateCategory'
+ */
+export type EnumQuickUpdateCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuickUpdateCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'QuickUpdateCategory[]'
+ */
+export type ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuickUpdateCategory[]'>
+    
+
+
+/**
  * Reference to a field of type 'EmailPriority'
  */
 export type EnumEmailPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailPriority'>
@@ -1371,6 +1473,7 @@ export type GlobalOmitConfig = {
   player?: Prisma.PlayerOmit
   news?: Prisma.NewsOmit
   admin?: Prisma.AdminOmit
+  quickUpdate?: Prisma.QuickUpdateOmit
   galleryItem?: Prisma.GalleryItemOmit
   siteSettings?: Prisma.SiteSettingsOmit
   notification?: Prisma.NotificationOmit

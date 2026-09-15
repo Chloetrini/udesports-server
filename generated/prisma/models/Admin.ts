@@ -239,6 +239,7 @@ export type AdminWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   articles?: Prisma.NewsListRelationFilter
+  quickUpdates?: Prisma.QuickUpdateListRelationFilter
 }
 
 export type AdminOrderByWithRelationInput = {
@@ -255,6 +256,7 @@ export type AdminOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   articles?: Prisma.NewsOrderByRelationAggregateInput
+  quickUpdates?: Prisma.QuickUpdateOrderByRelationAggregateInput
 }
 
 export type AdminWhereUniqueInput = Prisma.AtLeast<{
@@ -274,6 +276,7 @@ export type AdminWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Admin"> | Date | string
   articles?: Prisma.NewsListRelationFilter
+  quickUpdates?: Prisma.QuickUpdateListRelationFilter
 }, "id" | "email">
 
 export type AdminOrderByWithAggregationInput = {
@@ -326,6 +329,7 @@ export type AdminCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   articles?: Prisma.NewsCreateNestedManyWithoutAuthorInput
+  quickUpdates?: Prisma.QuickUpdateCreateNestedManyWithoutAuthorInput
 }
 
 export type AdminUncheckedCreateInput = {
@@ -342,6 +346,7 @@ export type AdminUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   articles?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
+  quickUpdates?: Prisma.QuickUpdateUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type AdminUpdateInput = {
@@ -358,6 +363,7 @@ export type AdminUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   articles?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
+  quickUpdates?: Prisma.QuickUpdateUpdateManyWithoutAuthorNestedInput
 }
 
 export type AdminUncheckedUpdateInput = {
@@ -374,6 +380,7 @@ export type AdminUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   articles?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
+  quickUpdates?: Prisma.QuickUpdateUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type AdminCreateManyInput = {
@@ -493,6 +500,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type AdminCreateNestedOneWithoutQuickUpdatesInput = {
+  create?: Prisma.XOR<Prisma.AdminCreateWithoutQuickUpdatesInput, Prisma.AdminUncheckedCreateWithoutQuickUpdatesInput>
+  connectOrCreate?: Prisma.AdminCreateOrConnectWithoutQuickUpdatesInput
+  connect?: Prisma.AdminWhereUniqueInput
+}
+
+export type AdminUpdateOneRequiredWithoutQuickUpdatesNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminCreateWithoutQuickUpdatesInput, Prisma.AdminUncheckedCreateWithoutQuickUpdatesInput>
+  connectOrCreate?: Prisma.AdminCreateOrConnectWithoutQuickUpdatesInput
+  upsert?: Prisma.AdminUpsertWithoutQuickUpdatesInput
+  connect?: Prisma.AdminWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUpdateToOneWithWhereWithoutQuickUpdatesInput, Prisma.AdminUpdateWithoutQuickUpdatesInput>, Prisma.AdminUncheckedUpdateWithoutQuickUpdatesInput>
+}
+
 export type AdminCreateWithoutArticlesInput = {
   id?: string
   name: string
@@ -506,6 +527,7 @@ export type AdminCreateWithoutArticlesInput = {
   resetPasswordExpire?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quickUpdates?: Prisma.QuickUpdateCreateNestedManyWithoutAuthorInput
 }
 
 export type AdminUncheckedCreateWithoutArticlesInput = {
@@ -521,6 +543,7 @@ export type AdminUncheckedCreateWithoutArticlesInput = {
   resetPasswordExpire?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  quickUpdates?: Prisma.QuickUpdateUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type AdminCreateOrConnectWithoutArticlesInput = {
@@ -552,6 +575,7 @@ export type AdminUpdateWithoutArticlesInput = {
   resetPasswordExpire?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quickUpdates?: Prisma.QuickUpdateUpdateManyWithoutAuthorNestedInput
 }
 
 export type AdminUncheckedUpdateWithoutArticlesInput = {
@@ -567,6 +591,87 @@ export type AdminUncheckedUpdateWithoutArticlesInput = {
   resetPasswordExpire?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quickUpdates?: Prisma.QuickUpdateUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type AdminCreateWithoutQuickUpdatesInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  role?: $Enums.AdminRole
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteExpire?: Date | string | null
+  resetPasswordToken?: string | null
+  resetPasswordExpire?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  articles?: Prisma.NewsCreateNestedManyWithoutAuthorInput
+}
+
+export type AdminUncheckedCreateWithoutQuickUpdatesInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  role?: $Enums.AdminRole
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteExpire?: Date | string | null
+  resetPasswordToken?: string | null
+  resetPasswordExpire?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  articles?: Prisma.NewsUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type AdminCreateOrConnectWithoutQuickUpdatesInput = {
+  where: Prisma.AdminWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminCreateWithoutQuickUpdatesInput, Prisma.AdminUncheckedCreateWithoutQuickUpdatesInput>
+}
+
+export type AdminUpsertWithoutQuickUpdatesInput = {
+  update: Prisma.XOR<Prisma.AdminUpdateWithoutQuickUpdatesInput, Prisma.AdminUncheckedUpdateWithoutQuickUpdatesInput>
+  create: Prisma.XOR<Prisma.AdminCreateWithoutQuickUpdatesInput, Prisma.AdminUncheckedCreateWithoutQuickUpdatesInput>
+  where?: Prisma.AdminWhereInput
+}
+
+export type AdminUpdateToOneWithWhereWithoutQuickUpdatesInput = {
+  where?: Prisma.AdminWhereInput
+  data: Prisma.XOR<Prisma.AdminUpdateWithoutQuickUpdatesInput, Prisma.AdminUncheckedUpdateWithoutQuickUpdatesInput>
+}
+
+export type AdminUpdateWithoutQuickUpdatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumAdminRoleFieldUpdateOperationsInput | $Enums.AdminRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpire?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetPasswordToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetPasswordExpire?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  articles?: Prisma.NewsUpdateManyWithoutAuthorNestedInput
+}
+
+export type AdminUncheckedUpdateWithoutQuickUpdatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumAdminRoleFieldUpdateOperationsInput | $Enums.AdminRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpire?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  resetPasswordToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetPasswordExpire?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  articles?: Prisma.NewsUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 
@@ -576,10 +681,12 @@ export type AdminUncheckedUpdateWithoutArticlesInput = {
 
 export type AdminCountOutputType = {
   articles: number
+  quickUpdates: number
 }
 
 export type AdminCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   articles?: boolean | AdminCountOutputTypeCountArticlesArgs
+  quickUpdates?: boolean | AdminCountOutputTypeCountQuickUpdatesArgs
 }
 
 /**
@@ -599,6 +706,13 @@ export type AdminCountOutputTypeCountArticlesArgs<ExtArgs extends runtime.Types.
   where?: Prisma.NewsWhereInput
 }
 
+/**
+ * AdminCountOutputType without action
+ */
+export type AdminCountOutputTypeCountQuickUpdatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.QuickUpdateWhereInput
+}
+
 
 export type AdminSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -614,6 +728,7 @@ export type AdminSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdAt?: boolean
   updatedAt?: boolean
   articles?: boolean | Prisma.Admin$articlesArgs<ExtArgs>
+  quickUpdates?: boolean | Prisma.Admin$quickUpdatesArgs<ExtArgs>
   _count?: boolean | Prisma.AdminCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["admin"]>
 
@@ -665,6 +780,7 @@ export type AdminSelectScalar = {
 export type AdminOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "role" | "isActive" | "inviteToken" | "inviteExpire" | "resetPasswordToken" | "resetPasswordExpire" | "createdAt" | "updatedAt", ExtArgs["result"]["admin"]>
 export type AdminInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   articles?: boolean | Prisma.Admin$articlesArgs<ExtArgs>
+  quickUpdates?: boolean | Prisma.Admin$quickUpdatesArgs<ExtArgs>
   _count?: boolean | Prisma.AdminCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AdminIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -674,6 +790,7 @@ export type $AdminPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name: "Admin"
   objects: {
     articles: Prisma.$NewsPayload<ExtArgs>[]
+    quickUpdates: Prisma.$QuickUpdatePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1083,6 +1200,7 @@ readonly fields: AdminFieldRefs;
 export interface Prisma__AdminClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   articles<T extends Prisma.Admin$articlesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Admin$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  quickUpdates<T extends Prisma.Admin$quickUpdatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Admin$quickUpdatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuickUpdatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1538,6 +1656,30 @@ export type Admin$articlesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.NewsScalarFieldEnum | Prisma.NewsScalarFieldEnum[]
+}
+
+/**
+ * Admin.quickUpdates
+ */
+export type Admin$quickUpdatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the QuickUpdate
+   */
+  select?: Prisma.QuickUpdateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the QuickUpdate
+   */
+  omit?: Prisma.QuickUpdateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QuickUpdateInclude<ExtArgs> | null
+  where?: Prisma.QuickUpdateWhereInput
+  orderBy?: Prisma.QuickUpdateOrderByWithRelationInput | Prisma.QuickUpdateOrderByWithRelationInput[]
+  cursor?: Prisma.QuickUpdateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.QuickUpdateScalarFieldEnum | Prisma.QuickUpdateScalarFieldEnum[]
 }
 
 /**
