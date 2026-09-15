@@ -68,6 +68,11 @@ export type StaffMember = Prisma.StaffMemberModel
  */
 export type Headline = Prisma.HeadlineModel
 /**
+ * Model Award
+ * 
+ */
+export type Award = Prisma.AwardModel
+/**
  * Model Subscriber
  * 
  */

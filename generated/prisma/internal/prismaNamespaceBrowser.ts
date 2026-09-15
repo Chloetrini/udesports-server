@@ -61,6 +61,7 @@ export const ModelName = {
   Testimonial: 'Testimonial',
   StaffMember: 'StaffMember',
   Headline: 'Headline',
+  Award: 'Award',
   Subscriber: 'Subscriber',
   EmailQueue: 'EmailQueue'
 } as const
@@ -240,6 +241,20 @@ export const HeadlineScalarFieldEnum = {
 } as const
 
 export type HeadlineScalarFieldEnum = (typeof HeadlineScalarFieldEnum)[keyof typeof HeadlineScalarFieldEnum]
+
+
+export const AwardScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  subtitle: 'subtitle',
+  image: 'image',
+  order: 'order',
+  published: 'published',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AwardScalarFieldEnum = (typeof AwardScalarFieldEnum)[keyof typeof AwardScalarFieldEnum]
 
 
 export const SubscriberScalarFieldEnum = {

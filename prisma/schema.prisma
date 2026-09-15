@@ -188,6 +188,17 @@ model Headline {
   updatedAt DateTime         @updatedAt
 }
 
+model Award {
+  id        String   @id @default(uuid())
+  name      String
+  subtitle  String
+  image     String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Subscriber {
   id                String   @id @default(uuid())
   email             String   @unique
@@ -231,3 +242,4 @@ model EmailQueue {
   @@index([status, createdAt])
   @@map("email_queue")
 }
+

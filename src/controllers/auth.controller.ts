@@ -206,8 +206,9 @@ export const inviteAdmin = tryCatchWrapper(async (req: AuthRequest, res: Respons
     },
   });
 
-  // invite link → frontend set-password page
-  const inviteUrl = `${process.env.CLIENT_URL}/set-password?token=${rawToken}`;
+  // invite link → frontend set-password page (admin/new-password reads
+  // the `token` query param and calls PUT /auth/set-password/:token)
+  const inviteUrl = `${process.env.CLIENT_URL}/admin/new-password?token=${rawToken}`;
   const { subject, html } = inviteEmailTemplate(admin.name, req.admin?.id || "Super Admin", inviteUrl, admin.role);
   await sendEmail({ to: admin.email, subject, html });
 

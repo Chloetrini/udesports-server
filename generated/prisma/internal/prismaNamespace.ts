@@ -394,6 +394,7 @@ export const ModelName = {
   Testimonial: 'Testimonial',
   StaffMember: 'StaffMember',
   Headline: 'Headline',
+  Award: 'Award',
   Subscriber: 'Subscriber',
   EmailQueue: 'EmailQueue'
 } as const
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "player" | "news" | "admin" | "quickUpdate" | "galleryItem" | "siteSettings" | "notification" | "testimonial" | "staffMember" | "headline" | "subscriber" | "emailQueue"
+    modelProps: "player" | "news" | "admin" | "quickUpdate" | "galleryItem" | "siteSettings" | "notification" | "testimonial" | "staffMember" | "headline" | "award" | "subscriber" | "emailQueue"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1155,6 +1156,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Award: {
+      payload: Prisma.$AwardPayload<ExtArgs>
+      fields: Prisma.AwardFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AwardFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AwardFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>
+        }
+        findFirst: {
+          args: Prisma.AwardFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AwardFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>
+        }
+        findMany: {
+          args: Prisma.AwardFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>[]
+        }
+        create: {
+          args: Prisma.AwardCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>
+        }
+        createMany: {
+          args: Prisma.AwardCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AwardCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>[]
+        }
+        delete: {
+          args: Prisma.AwardDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>
+        }
+        update: {
+          args: Prisma.AwardUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>
+        }
+        deleteMany: {
+          args: Prisma.AwardDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AwardUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AwardUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>[]
+        }
+        upsert: {
+          args: Prisma.AwardUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AwardPayload>
+        }
+        aggregate: {
+          args: Prisma.AwardAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAward>
+        }
+        groupBy: {
+          args: Prisma.AwardGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AwardGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AwardCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AwardCountAggregateOutputType> | number
+        }
+      }
+    }
     Subscriber: {
       payload: Prisma.$SubscriberPayload<ExtArgs>
       fields: Prisma.SubscriberFieldRefs
@@ -1503,6 +1578,20 @@ export const HeadlineScalarFieldEnum = {
 export type HeadlineScalarFieldEnum = (typeof HeadlineScalarFieldEnum)[keyof typeof HeadlineScalarFieldEnum]
 
 
+export const AwardScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  subtitle: 'subtitle',
+  image: 'image',
+  order: 'order',
+  published: 'published',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AwardScalarFieldEnum = (typeof AwardScalarFieldEnum)[keyof typeof AwardScalarFieldEnum]
+
+
 export const SubscriberScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -1845,6 +1934,7 @@ export type GlobalOmitConfig = {
   testimonial?: Prisma.TestimonialOmit
   staffMember?: Prisma.StaffMemberOmit
   headline?: Prisma.HeadlineOmit
+  award?: Prisma.AwardOmit
   subscriber?: Prisma.SubscriberOmit
   emailQueue?: Prisma.EmailQueueOmit
 }

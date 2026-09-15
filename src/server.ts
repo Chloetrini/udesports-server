@@ -27,6 +27,7 @@ import testimonialRoutes from './routes/testimonial.routes.js'
 import newsletterRoutes from './routes/newsletter.routes.js'
 import staffRoutes from './routes/staff.routes.js'
 import headlineRoutes from './routes/headline.routes.js'
+import awardRoutes from './routes/award.routes.js'
 
 // Extend express-session with UDESport's admin session shape
 declare module 'express-session' {
@@ -86,6 +87,7 @@ app.use('/api/testimonials', testimonialRoutes)
 app.use('/api/newsletter', newsletterRoutes)
 app.use('/api/staff', staffRoutes)
 app.use('/api/headlines', headlineRoutes)
+app.use('/api/awards', awardRoutes)
 
 app.get('/api/health', (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'UDESport API is running' })
@@ -146,3 +148,4 @@ if (!process.env.VERCEL) {
 }
 
 export default app
+
