@@ -136,4 +136,3 @@ export const deleteAward = tryCatchWrapper(async (req: Request, res: Response): 
 
   sendTsRestSuccess(res, 200, { success: true, message: "Award deleted successfully" });
 });
-

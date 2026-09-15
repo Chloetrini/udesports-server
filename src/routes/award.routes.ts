@@ -21,4 +21,3 @@ router.put("/:id", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), inva
 router.delete("/:id", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("awards"), deleteAward);
 
 export default router;
-

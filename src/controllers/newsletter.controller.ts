@@ -77,4 +77,3 @@ export const getAllSubscribersAdmin = tryCatchWrapper(async (req: Request, res: 
     body: { count: subscribers.length, subscribers },
   });
 });
-

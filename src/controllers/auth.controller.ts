@@ -321,6 +321,14 @@ export const deleteAdmin = tryCatchWrapper(async (req: AuthRequest, res: Respons
     return sendTsRestError(res, 404, "Admin not found");
   }
 
+  // The frontend already hides the delete control for Super Admin rows —
+  // this is the backend half of that same rule, so it holds even if the
+  // endpoint is ever called directly (e.g. with more than one Super Admin
+  // account on the team).
+  if (existing.role === "SUPER_ADMIN") {
+    return sendTsRestError(res, 400, "Super Admin accounts can't be deleted from here");
+  }
+
   await prisma.admin.delete({ where: { id } });
 
   sendTsRestSuccess(res, 200, { success: true, message: "Admin deleted successfully" });

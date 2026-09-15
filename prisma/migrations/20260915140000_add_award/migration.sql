@@ -14,4 +14,3 @@ CREATE TABLE "Award" (
 
     CONSTRAINT "Award_pkey" PRIMARY KEY ("id")
 );
-

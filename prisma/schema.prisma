@@ -242,4 +242,3 @@ model EmailQueue {
   @@index([status, createdAt])
   @@map("email_queue")
 }
-

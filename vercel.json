@@ -7,4 +7,3 @@
     { "path": "/api/cron-email", "schedule": "*/10 * * * *" }
   ]
 }
-
