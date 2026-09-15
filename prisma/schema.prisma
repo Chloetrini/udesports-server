@@ -51,10 +51,14 @@ model Player {
   saves           Int          @default(0)
   cleanSheets     Int          @default(0)
   rating          Int?
-  currentClubName String?
-  currentClubLogo String?
-  newClubName     String?
-  newClubLogo     String?
+  // previousClubName/Logo: the club a player left — set only when a
+  // transfer actually happened, left blank for a fresh signing.
+  // currentClubName/Logo: the club a player is at right now — always the
+  // primary field, shown on every player card/detail page.
+  previousClubName String?
+  previousClubLogo String?
+  currentClubName  String?
+  currentClubLogo  String?
   playerHistory   String?
   playerAppearance Int         @default(0)
   isFeatured      Boolean      @default(false)

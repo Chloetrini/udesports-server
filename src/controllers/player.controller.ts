@@ -93,10 +93,10 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
     saves,
     cleanSheets,
     rating,
+    previousClubName,
+    previousClubLogo,
     currentClubName,
     currentClubLogo,
-    newClubName,
-    newClubLogo,
     playerHistory,
     playerAppearance,
     isFeatured,
@@ -132,8 +132,8 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
   }
 
   // Club logos: an uploaded file (if provided) wins over a pasted URL.
+  const uploadedPreviousClubLogo = await uploadImageField(req, "previousClubLogo", "udesport/clubs");
   const uploadedCurrentClubLogo = await uploadImageField(req, "currentClubLogo", "udesport/clubs");
-  const uploadedNewClubLogo = await uploadImageField(req, "newClubLogo", "udesport/clubs");
 
   const player = await prisma.player.create({
     data: {
@@ -151,10 +151,10 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
       saves: saves ? Number(saves) : 0,
       cleanSheets: cleanSheets ? Number(cleanSheets) : 0,
       rating: rating ? Number(rating) : null,
+      previousClubName: previousClubName || null,
+      previousClubLogo: uploadedPreviousClubLogo || previousClubLogo || null,
       currentClubName: currentClubName || null,
       currentClubLogo: uploadedCurrentClubLogo || currentClubLogo || null,
-      newClubName: newClubName || null,
-      newClubLogo: uploadedNewClubLogo || newClubLogo || null,
       playerHistory: playerHistory || null,
       playerAppearance: playerAppearance ? Number(playerAppearance) : 0,
       isFeatured: isFeatured === "true" || isFeatured === true ? true : false,
@@ -198,10 +198,10 @@ export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response):
     saves,
     cleanSheets,
     rating,
+    previousClubName,
+    previousClubLogo,
     currentClubName,
     currentClubLogo,
-    newClubName,
-    newClubLogo,
     playerHistory,
     playerAppearance,
     isFeatured,
@@ -233,8 +233,8 @@ export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response):
   // Club logos: an uploaded file (if provided) wins over a pasted URL;
   // otherwise fall back to whatever was sent as a plain string (or leave
   // untouched, same as every other field, if nothing was sent at all).
+  const uploadedPreviousClubLogo = await uploadImageField(req, "previousClubLogo", "udesport/clubs");
   const uploadedCurrentClubLogo = await uploadImageField(req, "currentClubLogo", "udesport/clubs");
-  const uploadedNewClubLogo = await uploadImageField(req, "newClubLogo", "udesport/clubs");
 
   // Prisma ignores `undefined`, so unsent fields stay untouched
   const player = await prisma.player.update({
@@ -254,10 +254,10 @@ export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response):
       saves: saves !== undefined ? Number(saves) : undefined,
       cleanSheets: cleanSheets !== undefined ? Number(cleanSheets) : undefined,
       rating: rating !== undefined ? Number(rating) : undefined,
+      previousClubName: previousClubName ?? undefined,
+      previousClubLogo: uploadedPreviousClubLogo ?? previousClubLogo ?? undefined,
       currentClubName: currentClubName ?? undefined,
       currentClubLogo: uploadedCurrentClubLogo ?? currentClubLogo ?? undefined,
-      newClubName: newClubName ?? undefined,
-      newClubLogo: uploadedNewClubLogo ?? newClubLogo ?? undefined,
       playerHistory: playerHistory ?? undefined,
       playerAppearance: playerAppearance !== undefined ? Number(playerAppearance) : undefined,
       isFeatured:
