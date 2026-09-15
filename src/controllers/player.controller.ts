@@ -156,7 +156,7 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
       currentClubName: currentClubName || null,
       currentClubLogo: uploadedCurrentClubLogo || currentClubLogo || null,
       playerHistory: playerHistory || null,
-      playerAppearance: playerAppearance ? Number(playerAppearance) : 0,
+      playerAppearance: playerAppearance ? String(playerAppearance) : "0",
       isFeatured: isFeatured === "true" || isFeatured === true ? true : false,
       // Defaults to published so a plain create (no publish flag sent) never
       // silently hides a player; the admin form's Save as Draft button is
@@ -259,7 +259,7 @@ export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response):
       currentClubName: currentClubName ?? undefined,
       currentClubLogo: uploadedCurrentClubLogo ?? currentClubLogo ?? undefined,
       playerHistory: playerHistory ?? undefined,
-      playerAppearance: playerAppearance !== undefined ? Number(playerAppearance) : undefined,
+      playerAppearance: playerAppearance !== undefined ? String(playerAppearance) : undefined,
       isFeatured:
         isFeatured === undefined ? undefined : isFeatured === "true" || isFeatured === true,
       published:

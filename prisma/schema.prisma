@@ -50,7 +50,7 @@ model Player {
   assists         Int          @default(0)
   saves           Int          @default(0)
   cleanSheets     Int          @default(0)
-  rating          Int?
+  rating          Float?
   // previousClubName/Logo: the club a player left — set only when a
   // transfer actually happened, left blank for a fresh signing.
   // currentClubName/Logo: the club a player is at right now — always the
@@ -60,7 +60,8 @@ model Player {
   currentClubName  String?
   currentClubLogo  String?
   playerHistory   String?
-  playerAppearance Int         @default(0)
+  // Free-text (not a count) so it can hold a trailing "+", e.g. "382+".
+  playerAppearance String      @default("0")
   isFeatured      Boolean      @default(false)
   published       Boolean      @default(true)
 
