@@ -160,3 +160,39 @@ export const newsletterNotificationTemplate = (
     </html>
   `,
 })
+
+// WELCOME EMAIL — sent immediately when someone subscribes to the newsletter
+export const welcomeSubscriberTemplate = (unsubscribeUrl: string): { subject: string; html: string } => ({
+  subject: "Welcome to UDESport's newsletter!",
+  html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Welcome to UDESport</title>
+    </head>
+    <body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;">
+      <div style="width:100%;background:#f3f4f6;padding:40px 0;">
+        <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;">
+          <div style="background:${DARK};padding:32px 24px;text-align:center;">
+            <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">UDESport</h1>
+            <p style="color:${GREEN};margin:8px 0 0;font-size:13px;">Newsletter</p>
+          </div>
+          <div style="padding:32px 24px;">
+            <h2 style="color:${DARK};margin:0 0 16px;font-size:20px;line-height:1.4;">You're on the list!</h2>
+            <p style="color:#444545;font-size:14px;line-height:1.7;margin:0 0 24px;">
+              Thanks for subscribing to UDESport's newsletter. You'll now get an email whenever
+              we post news, transfer updates, or announcements — straight from the pitch to your inbox.
+            </p>
+          </div>
+          <div style="background:#f9fafb;padding:20px 24px;text-align:center;border-top:1px solid #e5e7eb;">
+            <p style="color:#75928B;font-size:11px;margin:0 0 8px;">© ${new Date().getFullYear()} UDESport Management Ltd. All rights reserved.</p>
+            <p style="color:#75928B;font-size:11px;margin:0;">You're receiving this because you subscribed to UDESport updates. <a href="${unsubscribeUrl}" style="color:#75928B;text-decoration:underline;">Unsubscribe</a></p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+})

@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../config/prisma.js";
 import tryCatchWrapper from "../lib/tryCatchWrapper.js";
 import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
+import { EmailService } from "../services/email.service.js";
+import logger from "../config/logger.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,7 +28,16 @@ export const subscribe = tryCatchWrapper(async (req: Request, res: Response): Pr
     return;
   }
 
-  await prisma.subscriber.create({ data: { email } });
+  const subscriber = await prisma.subscriber.create({ data: { email } });
+
+  // Fire the welcome email, but don't fail the subscribe request if Brevo
+  // is down — the subscriber row is already created either way, and
+  // sendWelcomeEmail queues itself for retry on failure.
+  try {
+    await EmailService.sendWelcomeEmail({ email: subscriber.email, unsubscribeToken: subscriber.unsubscribeToken });
+  } catch (err) {
+    logger.error({ err, email }, "Newsletter: welcome email failed to send or queue");
+  }
 
   sendTsRestSuccess(res, 201, {
     success: true,
@@ -66,3 +77,4 @@ export const getAllSubscribersAdmin = tryCatchWrapper(async (req: Request, res: 
     body: { count: subscribers.length, subscribers },
   });
 });
+

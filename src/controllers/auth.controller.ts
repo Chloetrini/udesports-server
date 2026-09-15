@@ -4,9 +4,19 @@ import { prisma } from "../config/prisma.js";
 import { generateJWT, sendTokenCookie, generateRandomToken, hashToken } from "../utils/generatetoken.js";
 import { sendEmailToRecipient as sendEmail } from "../email/send-email.js";
 import { inviteEmailTemplate, passwordResetEmailTemplate } from "../lib/emailTemplate.js";
+import { EmailService } from "../services/email.service.js";
 import { AuthRequest } from "../middlewares/auth.middleware.js";
 import tryCatchWrapper from "../lib/tryCatchWrapper.js";
 import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
+
+// Only these two roles can ever be granted through invite/edit — a Super
+// Admin can promote someone to Admin or Sub Admin, but never to Super
+// Admin. There's exactly one Super Admin: whoever is set up via
+// ADMIN_EMAIL/ADMIN_PASSWORD at first boot.
+const GRANTABLE_ROLES = ["ADMIN", "SUB_ADMIN"] as const;
+type GrantableRole = (typeof GRANTABLE_ROLES)[number];
+const isGrantableRole = (value: unknown): value is GrantableRole =>
+  typeof value === "string" && (GRANTABLE_ROLES as readonly string[]).includes(value);
 
 // LOGIN — checks credentials, sets httpOnly cookie
 export const login = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
@@ -183,6 +193,12 @@ export const inviteAdmin = tryCatchWrapper(async (req: AuthRequest, res: Respons
     return sendTsRestError(res, 400, "Name, email, and role are required");
   }
 
+  // a Super Admin can only ever grant Admin or Sub Admin — never another
+  // Super Admin (there's exactly one, set up via ADMIN_EMAIL/ADMIN_PASSWORD)
+  if (!isGrantableRole(role)) {
+    return sendTsRestError(res, 400, "Role must be either ADMIN or SUB_ADMIN");
+  }
+
   // prevent duplicates
   const existing = await prisma.admin.findUnique({
     where: { email: email.toLowerCase() },
@@ -199,7 +215,7 @@ export const inviteAdmin = tryCatchWrapper(async (req: AuthRequest, res: Respons
     data: {
       name,
       email: email.toLowerCase(),
-      role, // "ADMIN" or "SUB_ADMIN"
+      role,
       isActive: false,
       inviteToken: hashedToken,
       inviteExpire: new Date(Date.now() + Number(process.env.INVITE_TOKEN_EXPIRE || 86400000)), // 24h
@@ -209,10 +225,28 @@ export const inviteAdmin = tryCatchWrapper(async (req: AuthRequest, res: Respons
   // invite link → frontend set-password page (admin/new-password reads
   // the `token` query param and calls PUT /auth/set-password/:token)
   const inviteUrl = `${process.env.CLIENT_URL}/admin/new-password?token=${rawToken}`;
-  const { subject, html } = inviteEmailTemplate(admin.name, req.admin?.id || "Super Admin", inviteUrl, admin.role);
-  await sendEmail({ to: admin.email, subject, html });
+  const inviter = req.admin ? await prisma.admin.findUnique({ where: { id: req.admin.id }, select: { name: true } }) : null;
 
-  sendTsRestSuccess(res, 201, { success: true, message: `Invite sent to ${admin.email}` });
+  // Route through EmailService (not a raw sendEmail call): it checks whether
+  // Brevo actually accepted the send and, if not, queues the email for the
+  // retry cron instead of silently dropping it — the previous version here
+  // called sendEmail and ignored the result entirely, so a failed send still
+  // reported "Invite sent" with no record of it anywhere.
+  const { success, queued } = await EmailService.sendInviteEmail({
+    name: admin.name,
+    email: admin.email,
+    invitedBy: inviter?.name || "Super Admin",
+    inviteUrl,
+    role: admin.role,
+  });
+
+  sendTsRestSuccess(res, 201, {
+    success: true,
+    message: success
+      ? `Invite sent to ${admin.email}`
+      : `Admin account created, but the invite email couldn't be sent right now — it's queued and will retry automatically. (${admin.email})`,
+    body: { admin: { id: admin.id, name: admin.name, email: admin.email, role: admin.role }, emailSent: success, emailQueued: queued },
+  });
 });
 
 // SET PASSWORD — invited admin sets their first password & activates
@@ -359,6 +393,11 @@ export const updateAdmin = tryCatchWrapper(async (req: AuthRequest, res: Respons
     return sendTsRestError(res, 404, "Admin not found");
   }
 
+  // same rule as invite — this endpoint can only ever set ADMIN or SUB_ADMIN
+  if (role !== undefined && !isGrantableRole(role)) {
+    return sendTsRestError(res, 400, "Role must be either ADMIN or SUB_ADMIN");
+  }
+
   // if changing email, ensure it's not taken by another admin
   if (email && email.toLowerCase() !== admin.email) {
     const taken = await prisma.admin.findUnique({ where: { email: email.toLowerCase() } });
@@ -372,7 +411,7 @@ export const updateAdmin = tryCatchWrapper(async (req: AuthRequest, res: Respons
     data: {
       name: name ?? undefined,
       email: email ? email.toLowerCase() : undefined,
-      role: role ?? undefined, // "ADMIN" / "SUB_ADMIN" / "SUPER_ADMIN"
+      role: role ?? undefined,
     },
     select: { id: true, name: true, email: true, role: true, isActive: true },
   });

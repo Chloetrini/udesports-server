@@ -1,5 +1,10 @@
 import sendEmail from '../email/send-email.js'
-import { inviteEmailTemplate, passwordResetEmailTemplate, newsletterNotificationTemplate } from '../lib/emailTemplate.js'
+import {
+  inviteEmailTemplate,
+  passwordResetEmailTemplate,
+  newsletterNotificationTemplate,
+  welcomeSubscriberTemplate,
+} from '../lib/emailTemplate.js'
 import prisma from '../config/prisma.js'
 import { env } from '../config/key.js'
 import logger from '../config/logger.js'
@@ -67,6 +72,42 @@ export class EmailService {
         subject,
         html,
         priority: 'HIGH',
+        status: 'QUEUED',
+        retryCount: 0,
+        nextRetryAt: new Date(Date.now() + 5 * 60 * 1000),
+      },
+    })
+    return { success: false, queued: true }
+  }
+
+  /**
+   * Send the "you're on the list" welcome email when someone subscribes.
+   * Immediate send; queues for cron retry on failure — same pattern as
+   * sendInviteEmail/sendPasswordResetEmail (this is 1:1, unlike
+   * notifySubscribers below, so there's no bcc/privacy concern with
+   * sending it right away instead of only queuing).
+   */
+  static async sendWelcomeEmail({
+    email,
+    unsubscribeToken,
+  }: {
+    email: string
+    unsubscribeToken: string
+  }): Promise<{ success: boolean; queued: boolean }> {
+    const unsubscribeUrl = `${env.CLIENT_URL}/unsubscribe?token=${unsubscribeToken}`
+    const { subject, html } = welcomeSubscriberTemplate(unsubscribeUrl)
+
+    const result = await sendEmail({ email, subject, message: html })
+    if (result.success) {
+      return { success: true, queued: false }
+    }
+
+    await prisma.emailQueue.create({
+      data: {
+        to: [email],
+        subject,
+        html,
+        priority: 'NORMAL',
         status: 'QUEUED',
         retryCount: 0,
         nextRetryAt: new Date(Date.now() + 5 * 60 * 1000),
