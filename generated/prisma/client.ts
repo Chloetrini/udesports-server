@@ -75,6 +75,16 @@ export type SiteSettings = Prisma.SiteSettingsModel
  */
 export type Notification = Prisma.NotificationModel
 /**
+ * Model Testimonial
+ * 
+ */
+export type Testimonial = Prisma.TestimonialModel
+/**
+ * Model Subscriber
+ * 
+ */
+export type Subscriber = Prisma.SubscriberModel
+/**
  * Model EmailQueue
  * 
  */

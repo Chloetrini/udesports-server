@@ -110,3 +110,53 @@ export const passwordResetEmailTemplate = (
     </html>
   `,
 })
+
+// NEWSLETTER NOTIFICATION EMAIL — sent to every subscriber when a News
+// article or Quick Update is published.
+export const newsletterNotificationTemplate = (
+  kind: 'News' | 'Quick Update',
+  headline: string,
+  category: string,
+  url: string,
+  unsubscribeUrl: string
+): { subject: string; html: string } => ({
+  subject: kind === 'News' ? `New on UDESport: ${headline}` : `UDESport Quick Update: ${headline}`,
+  html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>${kind === 'News' ? 'New Article' : 'Quick Update'}</title>
+    </head>
+    <body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;">
+      <div style="width:100%;background:#f3f4f6;padding:40px 0;">
+        <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;">
+          <div style="background:${DARK};padding:32px 24px;text-align:center;">
+            <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">UDESport</h1>
+            <p style="color:${GREEN};margin:8px 0 0;font-size:13px;">${kind === 'News' ? 'News & Transfers' : 'Quick Update'}</p>
+          </div>
+          <div style="padding:32px 24px;">
+            <span style="display:inline-block;background:#dcfce7;color:#166534;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;margin-bottom:16px;">${category}</span>
+            <h2 style="color:${DARK};margin:0 0 16px;font-size:20px;line-height:1.4;">${headline}</h2>
+            <p style="color:#444545;font-size:14px;line-height:1.7;margin:0 0 24px;">${
+              kind === 'News'
+                ? 'A new article just went live on UDESport. Read the full story on our site.'
+                : 'A new quick update just went live on UDESport.'
+            }</p>
+            <div style="text-align:center;padding:8px 0 8px;">
+              <a href="${url}" style="display:inline-block;background-color:${GREEN};color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">${
+                kind === 'News' ? 'Read the Article' : 'View on UDESport'
+              }</a>
+            </div>
+          </div>
+          <div style="background:#f9fafb;padding:20px 24px;text-align:center;border-top:1px solid #e5e7eb;">
+            <p style="color:#75928B;font-size:11px;margin:0 0 8px;">© ${new Date().getFullYear()} UDESport Management Ltd. All rights reserved.</p>
+            <p style="color:#75928B;font-size:11px;margin:0;">You're receiving this because you subscribed to UDESport updates. <a href="${unsubscribeUrl}" style="color:#75928B;text-decoration:underline;">Unsubscribe</a></p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+})

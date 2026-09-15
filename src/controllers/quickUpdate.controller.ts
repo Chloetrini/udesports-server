@@ -3,6 +3,8 @@ import { prisma } from "../config/prisma.js";
 import { AuthRequest } from "../middlewares/auth.middleware.js";
 import tryCatchWrapper from "../lib/tryCatchWrapper.js";
 import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
+import { EmailService } from "../services/email.service.js";
+import logger from "../config/logger.js";
 
 // GET ALL QUICK UPDATES (public — only published, newest first, capped)
 export const getAllQuickUpdates = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
@@ -52,6 +54,19 @@ export const createQuickUpdate = tryCatchWrapper(async (req: AuthRequest, res: R
     include: { author: { select: { name: true } } },
   });
 
+  if (update.published) {
+    try {
+      await EmailService.notifySubscribers({
+        kind: "Quick Update",
+        headline: update.headline,
+        category: update.category,
+        path: `/news`,
+      });
+    } catch (err) {
+      logger.error({ err, updateId: update.id }, "Newsletter: failed to queue subscriber notifications for new quick update");
+    }
+  }
+
   sendTsRestSuccess(res, 201, {
     success: true,
     message: update.published ? "Quick update published successfully" : "Quick update saved to drafts",
@@ -79,6 +94,19 @@ export const updateQuickUpdate = tryCatchWrapper(async (req: Request, res: Respo
     },
     include: { author: { select: { name: true } } },
   });
+
+  if (!existing.published && update.published) {
+    try {
+      await EmailService.notifySubscribers({
+        kind: "Quick Update",
+        headline: update.headline,
+        category: update.category,
+        path: `/news`,
+      });
+    } catch (err) {
+      logger.error({ err, updateId: update.id }, "Newsletter: failed to queue subscriber notifications for published quick update");
+    }
+  }
 
   sendTsRestSuccess(res, 200, {
     success: true,

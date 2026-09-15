@@ -5,6 +5,8 @@ import cloudinary from "../config/cloudinary.js";
 import { AuthRequest } from "../middlewares/auth.middleware.js";
 import tryCatchWrapper from "../lib/tryCatchWrapper.js";
 import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
+import { EmailService } from "../services/email.service.js";
+import logger from "../config/logger.js";
 
 // GET ALL NEWS (public — only published articles)
 export const getAllNews = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
@@ -97,6 +99,20 @@ export const createNews = tryCatchWrapper(async (req: AuthRequest, res: Response
     },
   });
 
+  if (news.published) {
+    try {
+      await EmailService.notifySubscribers({
+        kind: "News",
+        headline: news.headline,
+        category: news.category,
+        path: `/news/${news.id}`,
+      });
+    } catch (err) {
+      // Never fail the publish because the newsletter fan-out hiccuped.
+      logger.error({ err, newsId: news.id }, "Newsletter: failed to queue subscriber notifications for new article");
+    }
+  }
+
   sendTsRestSuccess(res, 201, {
     success: true,
     message: news.published ? "Article published successfully" : "Article saved to drafts",
@@ -148,6 +164,21 @@ export const updateNews = tryCatchWrapper(async (req: Request, res: Response): P
       coverImage,
     },
   });
+
+  // Only notify on the draft → published transition, never on a plain edit
+  // of an already-live article (that would re-email everyone every save).
+  if (!existing.published && news.published) {
+    try {
+      await EmailService.notifySubscribers({
+        kind: "News",
+        headline: news.headline,
+        category: news.category,
+        path: `/news/${news.id}`,
+      });
+    } catch (err) {
+      logger.error({ err, newsId: news.id }, "Newsletter: failed to queue subscriber notifications for published article");
+    }
+  }
 
   sendTsRestSuccess(res, 200, {
     success: true,
