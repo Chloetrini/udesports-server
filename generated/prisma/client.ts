@@ -80,6 +80,16 @@ export type Notification = Prisma.NotificationModel
  */
 export type Testimonial = Prisma.TestimonialModel
 /**
+ * Model StaffMember
+ * 
+ */
+export type StaffMember = Prisma.StaffMemberModel
+/**
+ * Model Headline
+ * 
+ */
+export type Headline = Prisma.HeadlineModel
+/**
  * Model Subscriber
  * 
  */

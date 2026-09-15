@@ -392,6 +392,8 @@ export const ModelName = {
   SiteSettings: 'SiteSettings',
   Notification: 'Notification',
   Testimonial: 'Testimonial',
+  StaffMember: 'StaffMember',
+  Headline: 'Headline',
   Subscriber: 'Subscriber',
   EmailQueue: 'EmailQueue'
 } as const
@@ -409,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "player" | "news" | "admin" | "quickUpdate" | "galleryItem" | "siteSettings" | "notification" | "testimonial" | "subscriber" | "emailQueue"
+    modelProps: "player" | "news" | "admin" | "quickUpdate" | "galleryItem" | "siteSettings" | "notification" | "testimonial" | "staffMember" | "headline" | "subscriber" | "emailQueue"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1005,6 +1007,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    StaffMember: {
+      payload: Prisma.$StaffMemberPayload<ExtArgs>
+      fields: Prisma.StaffMemberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffMemberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffMemberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>
+        }
+        findFirst: {
+          args: Prisma.StaffMemberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffMemberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>
+        }
+        findMany: {
+          args: Prisma.StaffMemberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>[]
+        }
+        create: {
+          args: Prisma.StaffMemberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>
+        }
+        createMany: {
+          args: Prisma.StaffMemberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StaffMemberCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>[]
+        }
+        delete: {
+          args: Prisma.StaffMemberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>
+        }
+        update: {
+          args: Prisma.StaffMemberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffMemberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffMemberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StaffMemberUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>[]
+        }
+        upsert: {
+          args: Prisma.StaffMemberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffMemberPayload>
+        }
+        aggregate: {
+          args: Prisma.StaffMemberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffMember>
+        }
+        groupBy: {
+          args: Prisma.StaffMemberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffMemberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffMemberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    Headline: {
+      payload: Prisma.$HeadlinePayload<ExtArgs>
+      fields: Prisma.HeadlineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HeadlineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HeadlineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>
+        }
+        findFirst: {
+          args: Prisma.HeadlineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HeadlineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>
+        }
+        findMany: {
+          args: Prisma.HeadlineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>[]
+        }
+        create: {
+          args: Prisma.HeadlineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>
+        }
+        createMany: {
+          args: Prisma.HeadlineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HeadlineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>[]
+        }
+        delete: {
+          args: Prisma.HeadlineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>
+        }
+        update: {
+          args: Prisma.HeadlineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>
+        }
+        deleteMany: {
+          args: Prisma.HeadlineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HeadlineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HeadlineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>[]
+        }
+        upsert: {
+          args: Prisma.HeadlineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeadlinePayload>
+        }
+        aggregate: {
+          args: Prisma.HeadlineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHeadline>
+        }
+        groupBy: {
+          args: Prisma.HeadlineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HeadlineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HeadlineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HeadlineCountAggregateOutputType> | number
+        }
+      }
+    }
     Subscriber: {
       payload: Prisma.$SubscriberPayload<ExtArgs>
       fields: Prisma.SubscriberFieldRefs
@@ -1326,6 +1476,33 @@ export const TestimonialScalarFieldEnum = {
 export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
 
 
+export const StaffMemberScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  role: 'role',
+  photo: 'photo',
+  verified: 'verified',
+  order: 'order',
+  published: 'published',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffMemberScalarFieldEnum = (typeof StaffMemberScalarFieldEnum)[keyof typeof StaffMemberScalarFieldEnum]
+
+
+export const HeadlineScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  headline: 'headline',
+  published: 'published',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HeadlineScalarFieldEnum = (typeof HeadlineScalarFieldEnum)[keyof typeof HeadlineScalarFieldEnum]
+
+
 export const SubscriberScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -1494,6 +1671,20 @@ export type ListEnumQuickUpdateCategoryFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
+ * Reference to a field of type 'HeadlineCategory'
+ */
+export type EnumHeadlineCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HeadlineCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'HeadlineCategory[]'
+ */
+export type ListEnumHeadlineCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HeadlineCategory[]'>
+    
+
+
+/**
  * Reference to a field of type 'EmailPriority'
  */
 export type EnumEmailPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmailPriority'>
@@ -1652,6 +1843,8 @@ export type GlobalOmitConfig = {
   siteSettings?: Prisma.SiteSettingsOmit
   notification?: Prisma.NotificationOmit
   testimonial?: Prisma.TestimonialOmit
+  staffMember?: Prisma.StaffMemberOmit
+  headline?: Prisma.HeadlineOmit
   subscriber?: Prisma.SubscriberOmit
   emailQueue?: Prisma.EmailQueueOmit
 }

@@ -48,6 +48,16 @@ export const AdminRole = {
 export type AdminRole = (typeof AdminRole)[keyof typeof AdminRole]
 
 
+export const HeadlineCategory = {
+  transfer: 'transfer',
+  negotiation: 'negotiation',
+  academy: 'academy',
+  announcement: 'announcement'
+} as const
+
+export type HeadlineCategory = (typeof HeadlineCategory)[keyof typeof HeadlineCategory]
+
+
 export const EmailPriority = {
   LOW: 'LOW',
   NORMAL: 'NORMAL',

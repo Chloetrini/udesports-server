@@ -59,6 +59,8 @@ export const ModelName = {
   SiteSettings: 'SiteSettings',
   Notification: 'Notification',
   Testimonial: 'Testimonial',
+  StaffMember: 'StaffMember',
+  Headline: 'Headline',
   Subscriber: 'Subscriber',
   EmailQueue: 'EmailQueue'
 } as const
@@ -211,6 +213,33 @@ export const TestimonialScalarFieldEnum = {
 } as const
 
 export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
+
+
+export const StaffMemberScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  role: 'role',
+  photo: 'photo',
+  verified: 'verified',
+  order: 'order',
+  published: 'published',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffMemberScalarFieldEnum = (typeof StaffMemberScalarFieldEnum)[keyof typeof StaffMemberScalarFieldEnum]
+
+
+export const HeadlineScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  headline: 'headline',
+  published: 'published',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HeadlineScalarFieldEnum = (typeof HeadlineScalarFieldEnum)[keyof typeof HeadlineScalarFieldEnum]
 
 
 export const SubscriberScalarFieldEnum = {

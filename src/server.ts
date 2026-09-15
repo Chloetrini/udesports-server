@@ -25,6 +25,8 @@ import emailRoutes from './routes/email.routes.js'
 import quickUpdateRoutes from './routes/quickUpdate.routes.js'
 import testimonialRoutes from './routes/testimonial.routes.js'
 import newsletterRoutes from './routes/newsletter.routes.js'
+import staffRoutes from './routes/staff.routes.js'
+import headlineRoutes from './routes/headline.routes.js'
 
 // Extend express-session with UDESport's admin session shape
 declare module 'express-session' {
@@ -82,6 +84,8 @@ app.use('/api/notifications', notificationRoutes)
 app.use('/api/quick-updates', quickUpdateRoutes)
 app.use('/api/testimonials', testimonialRoutes)
 app.use('/api/newsletter', newsletterRoutes)
+app.use('/api/staff', staffRoutes)
+app.use('/api/headlines', headlineRoutes)
 
 app.get('/api/health', (_req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'UDESport API is running' })

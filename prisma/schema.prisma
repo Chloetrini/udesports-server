@@ -157,6 +157,37 @@ model Testimonial {
   updatedAt DateTime @updatedAt
 }
 
+model StaffMember {
+  id        String   @id @default(uuid())
+  name      String
+  role      String
+  photo     String?
+  verified  Boolean  @default(true)
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Lowercase on purpose (unlike the other category enums) — it's a direct
+// match for the icon-selection switch already shipped in UpdateBar.tsx on
+// the frontend, so nothing there needs to change.
+enum HeadlineCategory {
+  transfer
+  negotiation
+  academy
+  announcement
+}
+
+model Headline {
+  id        String           @id @default(uuid())
+  category  HeadlineCategory
+  headline  String
+  published Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
 model Subscriber {
   id                String   @id @default(uuid())
   email             String   @unique

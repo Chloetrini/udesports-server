@@ -270,6 +270,23 @@ export type EnumQuickUpdateCategoryWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel>
 }
 
+export type EnumHeadlineCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.HeadlineCategory | Prisma.EnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHeadlineCategoryFilter<$PrismaModel> | $Enums.HeadlineCategory
+}
+
+export type EnumHeadlineCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HeadlineCategory | Prisma.EnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHeadlineCategoryWithAggregatesFilter<$PrismaModel> | $Enums.HeadlineCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHeadlineCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHeadlineCategoryFilter<$PrismaModel>
+}
+
 export type EnumEmailPriorityFilter<$PrismaModel = never> = {
   equals?: $Enums.EmailPriority | Prisma.EnumEmailPriorityFieldRefInput<$PrismaModel>
   in?: $Enums.EmailPriority[] | Prisma.ListEnumEmailPriorityFieldRefInput<$PrismaModel>
@@ -571,6 +588,23 @@ export type NestedEnumQuickUpdateCategoryWithAggregatesFilter<$PrismaModel = nev
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel>
   _max?: Prisma.NestedEnumQuickUpdateCategoryFilter<$PrismaModel>
+}
+
+export type NestedEnumHeadlineCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.HeadlineCategory | Prisma.EnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHeadlineCategoryFilter<$PrismaModel> | $Enums.HeadlineCategory
+}
+
+export type NestedEnumHeadlineCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.HeadlineCategory | Prisma.EnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.HeadlineCategory[] | Prisma.ListEnumHeadlineCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumHeadlineCategoryWithAggregatesFilter<$PrismaModel> | $Enums.HeadlineCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumHeadlineCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumHeadlineCategoryFilter<$PrismaModel>
 }
 
 export type NestedEnumEmailPriorityFilter<$PrismaModel = never> = {
