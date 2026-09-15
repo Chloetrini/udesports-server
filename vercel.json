@@ -3,7 +3,10 @@
   "rewrites": [
     { "source": "/(.*)", "destination": "/api" }
   ],
-  "crons": [
-    { "path": "/api/cron-email", "schedule": "*/10 * * * *" }
-  ]
+ "crons": [
+  {
+    "path": "/api/cron-email",
+    "schedule": "0 8 * * *"
+  }
+]
 }
