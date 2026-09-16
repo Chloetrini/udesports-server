@@ -173,6 +173,110 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
   });
 });
 
+// BULK CREATE PLAYERS — for importing many players at once (e.g. from a
+// CSV) instead of filling the Add Player form one at a time. Text/JSON
+// only, no photo/logo file uploads here (those still go through the
+// per-player edit form afterward). Every row is processed independently
+// so one bad/duplicate row doesn't block the rest of the batch — the
+// response reports success/failure per row.
+export const createPlayersBulk = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
+  const { players } = req.body;
+
+  if (!Array.isArray(players) || players.length === 0) {
+    return sendTsRestError(res, 400, 'Expected a non-empty "players" array');
+  }
+  if (players.length > 200) {
+    return sendTsRestError(res, 400, "Too many players in one batch (max 200) — split into smaller batches");
+  }
+
+  const REQUIRED_FIELDS = ["playerName", "DOB", "nationality", "preferredFoot", "ageGroup", "position"] as const;
+
+  const results: { playerName: string; success: boolean; error?: string }[] = [];
+
+  for (const raw of players) {
+    const row = (raw ?? {}) as Record<string, unknown>;
+    const label =
+      typeof row.playerName === "string" && row.playerName.trim() ? row.playerName.trim() : "(unnamed row)";
+
+    const missing = REQUIRED_FIELDS.filter(
+      (field) => row[field] === undefined || row[field] === null || row[field] === ""
+    );
+    if (missing.length > 0) {
+      results.push({ playerName: label, success: false, error: `Missing required field(s): ${missing.join(", ")}` });
+      continue;
+    }
+
+    const dobDate = new Date(row.DOB as string);
+    if (Number.isNaN(dobDate.getTime())) {
+      results.push({ playerName: label, success: false, error: "Invalid DOB" });
+      continue;
+    }
+
+    try {
+      const existingName = await prisma.player.findFirst({ where: { playerName: row.playerName as string } });
+      if (existingName) {
+        results.push({ playerName: label, success: false, error: "Player name already exists" });
+        continue;
+      }
+
+      await prisma.player.create({
+        data: {
+          playerName: row.playerName as string,
+          playerFullName: (row.playerFullName as string) || null,
+          DOB: dobDate,
+          nationality: row.nationality as string,
+          height: row.height ? Number(row.height) : null,
+          preferredFoot: row.preferredFoot as string,
+          ageGroup: row.ageGroup as string,
+          // Cast to `any` here to match createPlayer's behavior above — its
+          // destructured `status` is implicitly `any` (from the untyped
+          // Express req.body), which Prisma's generated PlayerStatus enum
+          // type accepts; `row` here is explicitly typed, so the same value
+          // needs an explicit escape hatch to satisfy the compiler the
+          // same way.
+          status: (row.status as any) || "FREE",
+          position: row.position as string,
+          goals: row.goals ? Number(row.goals) : 0,
+          assists: row.assists ? Number(row.assists) : 0,
+          saves: row.saves ? Number(row.saves) : 0,
+          cleanSheets: row.cleanSheets ? Number(row.cleanSheets) : 0,
+          rating: row.rating ? Number(row.rating) : null,
+          previousClubName: (row.previousClubName as string) || null,
+          previousClubLogo: (row.previousClubLogo as string) || null,
+          currentClubName: (row.currentClubName as string) || null,
+          currentClubLogo: (row.currentClubLogo as string) || null,
+          playerHistory: (row.playerHistory as string) || null,
+          playerAppearance: row.playerAppearance ? String(row.playerAppearance) : "0",
+          isFeatured: row.isFeatured === true || row.isFeatured === "true",
+          // Bulk-imported players always land as drafts — this endpoint
+          // is for getting a lot of data in quickly (e.g. from a CSV)
+          // before photos/logos/final review are ready. Nothing goes
+          // live from here automatically; publish each one individually
+          // from the admin edit form once it's ready.
+          published: false,
+          playerPhoto: null,
+        },
+      });
+
+      results.push({ playerName: label, success: true });
+    } catch (err) {
+      results.push({
+        playerName: label,
+        success: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  }
+
+  const successCount = results.filter((r) => r.success).length;
+
+  sendTsRestSuccess(res, 201, {
+    success: true,
+    message: `${successCount}/${players.length} players created as drafts`,
+    body: { results },
+  });
+});
+
 // UPDATE PLAYER
 export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response): Promise<void> => {
   const existing = await prisma.player.findUnique({

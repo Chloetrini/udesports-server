@@ -4,6 +4,7 @@ import {
   getPlayersAdmin,
   getPlayer,
   createPlayer,
+  createPlayersBulk,
   updatePlayer,
   deletePlayer,
   getDashboardStats,
@@ -21,6 +22,7 @@ router.get("/:id", cacheMiddleware("players", 60), getPlayer);
 router.get("/admin/all", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), getPlayersAdmin);
 router.get("/stats/overview", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), getDashboardStats);
 router.post("/", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("players"), createPlayer);
+router.post("/bulk", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("players"), createPlayersBulk);
 router.put("/:id", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("players"), updatePlayer);
 router.delete("/:id", protect, authorize("SUPER_ADMIN", "ADMIN", "SUB_ADMIN"), invalidateCache("players"), deletePlayer);
 
