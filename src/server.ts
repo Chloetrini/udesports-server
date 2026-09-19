@@ -45,14 +45,41 @@ setupGlobalErrorHandlers()
 app.use('/api', emailRoutes)
 
 // CORS
-// Always allow both local dev ports regardless of CLIENT_URL, so testing a
-// local frontend against this deployed (or local) backend keeps working no
-// matter what CLIENT_URL is set to for production. The client's vite.config.ts
-// pins the dev server to port 4001; 5173 is Vite's own default, kept as a
-// fallback in case that ever changes back.
+// An allow-list instead of a single origin: CLIENT_URL still drives it, but
+// the apex domain, the www subdomain, and the old udesports-client.vercel.app
+// address (in case old links/bookmarks still point at it) are always
+// accepted too. Previously this was a single-origin array built from
+// CLIENT_URL alone, so a domain migration where CLIENT_URL didn't exactly
+// match the browser's origin (apex vs. www, or a stale env var) silently
+// broke every request with a CORS error — the app would spin on "loading"
+// and then fail. Local dev ports are always allowed regardless of CLIENT_URL
+// so testing a local frontend against this deployed (or local) backend keeps
+// working no matter what CLIENT_URL is set to for production. The client's
+// vite.config.ts pins the dev server to port 4001; 5173 is Vite's own
+// default, kept as a fallback in case that ever changes back.
+const allowedOrigins = new Set(
+  [
+    env.CLIENT_URL,
+    'https://udesportsmgt.com',
+    'https://www.udesportsmgt.com',
+    'https://udesports-client.vercel.app',
+    'http://localhost:4002',
+    'http://localhost:4003',
+    'http://localhost:4001',
+  ].filter((value): value is string => Boolean(value))
+)
+
 app.use(
   cors({
-    origin: [env.CLIENT_URL || 'http://localhost:4002', 'http://localhost:4003', 'http://localhost:4001'],
+    origin: (origin, callback) => {
+      // No Origin header — server-to-server calls, curl, health checks —
+      // nothing to check against, so allow it through.
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, true)
+        return
+      }
+      callback(new Error(`Not allowed by CORS: ${origin}`))
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
