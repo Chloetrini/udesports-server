@@ -52,6 +52,10 @@ prisma/             schema.prisma, migrations/, seed.ts
 - Imports inside `src/` use relative paths with the `.js` extension.
 - Schema changes go through a Prisma migration (`npx prisma migrate dev --name <what>`). Never edit an applied migration.
 
+## Commits
+
+Author every commit as `Claude with Trini <noreply@anthropic.com>`, never plain "Claude". Set it before committing: `git config user.name "Claude with Trini" && git config user.email noreply@anthropic.com`.
+
 ## Gotchas
 
 - **CORS is an allow-list** in `src/server.ts` (`CLIENT_URL` plus the production domains and local ports 4001, 4002, 4003). A blocked origin looks like a client "loading forever". Add a new frontend origin there.
