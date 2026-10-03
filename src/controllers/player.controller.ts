@@ -5,6 +5,15 @@ import cloudinary from "../config/cloudinary.js";
 import tryCatchWrapper from "../lib/tryCatchWrapper.js";
 import { sendTsRestSuccess, sendTsRestError } from "../lib/responseHandler.js";
 
+// The client (PlayerImage) only ever asks Cloudinary for these two sizes, in
+// this exact transformation string. Building them at upload time means the
+// first visitor gets a ready-made file instead of waiting for Cloudinary to
+// create it. Keep in sync with optimizeImageUrl / snapWidth on the client.
+const PLAYER_PHOTO_EAGER = [
+  { raw_transformation: "w_640,c_limit,q_auto,f_auto" },
+  { raw_transformation: "w_960,c_limit,q_auto,f_auto" },
+];
+
 // Uploads a single image field (if present in req.files) to Cloudinary and
 // returns its secure URL. Shared by playerPhoto and both club-logo fields so
 // the upload_stream boilerplate isn't repeated for every field.
@@ -120,7 +129,7 @@ export const createPlayer = tryCatchWrapper(async (req: Request, res: Response):
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { folder: "udesport/players", transformation: [{ width: 800, quality: "auto", fetch_format: "auto" }] },
+          { folder: "udesport/players", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }], eager: PLAYER_PHOTO_EAGER },
           (error, result) => {
             if (error || !result) reject(error);
             else resolve(result);
@@ -323,7 +332,7 @@ export const updatePlayer = tryCatchWrapper(async (req: Request, res: Response):
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { folder: "udesport/players", transformation: [{ width: 800, quality: "auto", fetch_format: "auto" }] },
+          { folder: "udesport/players", transformation: [{ width: 1200, quality: "auto", fetch_format: "auto" }], eager: PLAYER_PHOTO_EAGER },
           (error, result) => {
             if (error || !result) reject(error);
             else resolve(result);

@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "seed": "tsx src/utils/seedAdmin.ts",
+    "warm-images": "tsx prisma/warm-player-images.ts",
     "postinstall": "prisma generate"
   },
   "keywords": [],

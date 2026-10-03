@@ -17,6 +17,7 @@ npm install                 # also runs prisma generate
 npx prisma migrate deploy   # apply migrations (reads DIRECT_URL)
 npm run dev                 # tsx watch src/server.ts (default port 4200)
 npm run seed                # create the admin account (ADMIN_EMAIL / ADMIN_PASSWORD)
+npm run warm-images         # pre-build Cloudinary player-photo sizes (640/960); run once after deploy
 npm run build               # tsc
 npm start                   # node dist/server.js
 npx tsc --noEmit            # typecheck (currently clean)
