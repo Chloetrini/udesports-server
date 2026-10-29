@@ -18,7 +18,7 @@ const versions = new Map<string, number>()
  * Build a consistent cache key from the request.
  */
 export const generateCacheKey = (req: Request, suffix?: string): string => {
-  const base = `${CACHE_PREFIX}:${req.path}`
+  const base = `${CACHE_PREFIX}:${req.baseUrl}${req.path}`
   if (suffix) return `${base}:${suffix}`
   if (Object.keys(req.query).length > 0) {
     const sorted = new URLSearchParams(
