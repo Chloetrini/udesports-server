@@ -8,7 +8,7 @@ REST API for **UDESport**, a football scouting and player placement academy site
 
 ## Stack (do not swap without asking)
 
-Node.js · TypeScript (ESM, imports end in `.js`) · Express 5 · PostgreSQL via Prisma 7 (`@prisma/adapter-pg`) · Memcachier (`memjs`) · Pino · Cloudinary · Brevo (email, via `axios` in `src/email/send-email.ts`) · Vercel (serverless + cron).
+Node.js · TypeScript (ESM, imports end in `.js`) · Express 5 · PostgreSQL via Prisma 7 (`@prisma/adapter-pg`) · in-process cache (`src/lib/cache.ts`; Memcachier was dropped because its us-west-2 round trips made every request slower) · Pino · Cloudinary · Brevo (email, via `axios` in `src/email/send-email.ts`) · Vercel (serverless + cron).
 
 ## Commands
 
@@ -48,8 +48,8 @@ prisma/             schema.prisma, migrations/, seed.ts
 - Every controller handler is wrapped in `tryCatchWrapper`, which forwards anything unexpected that is thrown to the error handler (`appErrorHandler`). Expected failures (bad input, not found) are answered directly with `sendTsRestError`.
 - Respond with `sendTsRestSuccess` / `sendTsRestError`: `{ success, message, body? }` or `{ success: false, message, details? }`.
 - Roles are `SUPER_ADMIN`, `ADMIN`, `SUB_ADMIN`. Protect admin routes with `protect` then `authorize(...roles)`.
-- Auth is a JWT in an httpOnly cookie (`req.cookies.token`) plus an `express-session` stored in Postgres (`sessions` table). Routes use `/api/...` with no version prefix; updates use `PUT`.
-- Public GETs use `cacheMiddleware('<namespace>', 60)`. **Every create/update/delete route on that resource must use `invalidateCache('<namespace>')`**, or the public site shows stale data.
+- Auth is a JWT in an httpOnly cookie (`req.cookies.token`) (`express-session` is mounted but unused; the `sessions` table does not exist, so `createTableIfMissing` is off). Routes use `/api/...` with no version prefix; updates use `PUT`.
+- Public GETs use `cacheMiddleware('<namespace>', 60)`, which also sends `Cache-Control: s-maxage` so Vercel's edge serves them; admin edits can take up to ~one TTL to appear. **Every create/update/delete route on that resource must use `invalidateCache('<namespace>')`**, or the public site shows stale data.
 - Imports inside `src/` use relative paths with the `.js` extension.
 - Schema changes go through a Prisma migration (`npx prisma migrate dev --name <what>`). Never edit an applied migration.
 
@@ -62,5 +62,5 @@ Author every commit as `Chloetrini <trinityegbukwu1@gmail.com>`, never as "Claud
 - **CORS is an allow-list** in `src/server.ts` (`CLIENT_URL` plus the production domains and local ports 4001, 4002, 4003). A blocked origin looks like a client "loading forever". Add a new frontend origin there.
 - The cron route `/api/cron-email` runs daily at 08:00 UTC (`vercel.json`) and is authenticated by the `x-cron-secret` header, not by session. It is mounted before CORS and session on purpose.
 - `src/server.ts` only calls `listen()` when `VERCEL` is unset. On Vercel `api/index.ts` exports the app.
-- `memjs` calls never throw out of `src/lib/cache.ts`; a cache failure must not break a request.
+- The cache is per serverless instance; `invalidateCache` only clears the instance that handled the write, so freshness across instances relies on the short TTL.
 - `mongodb` is still listed in `package.json` but nothing in `src/` imports it.

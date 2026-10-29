@@ -1,35 +1,18 @@
 import type { Request } from 'express'
-import { Client as Memcached } from 'memjs'
-import { env } from '../config/key'
 import logger from '../config/logger.js'
 
+// In-process cache. This used to talk to a MemCachier server in us-west-2
+// from a function running in us-east-1: every request paid for two remote
+// round trips (namespace version + value) and they were timing out, so the
+// cache never hit (x-cache was always MISS) and made every API call slower.
+// A per-instance Map costs nothing; cross-instance freshness is handled by
+// short TTLs plus the CDN headers set in cache.middleware.ts.
 const CACHE_PREFIX = 'ude:v1'
 const DEFAULT_TTL = 60 // 60 seconds
+const MAX_ENTRIES = 500
 
-let client: Memcached
-
-const getClient = (): Memcached => {
-  if (!client) {
-    const serverString = env.MEMCACHIER_SERVERS
-    const username = env.MEMCACHIER_USERNAME
-    const password = env.MEMCACHIER_PASSWORD
-
-    const options: Record<string, any> = {
-      timeout: 1,
-      retries: 1,
-      failover: false,
-    }
-
-    if (username && password) {
-      options.username = username
-      options.password = password
-    }
-
-    client = Memcached.create(serverString, options)
-    logger.info('Memcached client initialised')
-  }
-  return client
-}
+const store = new Map<string, { value: string; expiresAt: number }>()
+const versions = new Map<string, number>()
 
 /**
  * Build a consistent cache key from the request.
@@ -49,101 +32,49 @@ export const generateCacheKey = (req: Request, suffix?: string): string => {
 }
 
 /**
- * Get a value from cache. Returns null on miss or error (never throws).
+ * Get a value from cache. Returns null on miss or expiry (never throws).
  */
 export const getCache = async (key: string): Promise<string | null> => {
-  try {
-    const result = await getClient().get(key)
-    if (result && result.value) {
-      logger.debug({ cacheKey: key }, 'Cache HIT')
-      return result.value.toString()
-    }
-    logger.debug({ cacheKey: key }, 'Cache MISS')
-    return null
-  } catch (error) {
-    logger.warn({ err: error, cacheKey: key }, 'Cache GET error — proceeding without cache')
+  const hit = store.get(key)
+  if (!hit) return null
+  if (hit.expiresAt <= Date.now()) {
+    store.delete(key)
     return null
   }
+  logger.debug({ cacheKey: key }, 'Cache HIT')
+  return hit.value
 }
 
 /**
  * Set a value in cache with a TTL in seconds.
  */
 export const setCache = async (key: string, value: string, ttl: number = DEFAULT_TTL): Promise<boolean> => {
-  try {
-    await getClient().set(key, value, { expires: ttl })
-    logger.debug({ cacheKey: key, ttl }, 'Cache SET')
-    return true
-  } catch (error) {
-    logger.warn({ err: error, cacheKey: key }, 'Cache SET error')
-    return false
+  if (store.size >= MAX_ENTRIES) {
+    const oldest = store.keys().next().value
+    if (oldest !== undefined) store.delete(oldest)
   }
+  store.set(key, { value, expiresAt: Date.now() + ttl * 1000 })
+  return true
 }
 
 /**
  * Delete a single cache key.
  */
-export const deleteCache = async (key: string): Promise<boolean> => {
-  try {
-    await getClient().delete(key)
-    logger.debug({ cacheKey: key }, 'Cache DELETED')
-    return true
-  } catch (error) {
-    logger.warn({ err: error, cacheKey: key }, 'Cache DELETE error')
-    return false
-  }
-}
+export const deleteCache = async (key: string): Promise<boolean> => store.delete(key)
 
 /**
- * Flush the entire cache (use sparingly — only on version bump).
+ * Flush the entire cache.
  */
 export const flushCache = async (): Promise<boolean> => {
-  try {
-    await getClient().flush()
-    logger.info('Cache flushed')
-    return true
-  } catch (error) {
-    logger.warn({ err: error }, 'Cache FLUSH error')
-    return false
-  }
+  store.clear()
+  return true
 }
 
-// ============================================================
-// NAMESPACE VERSIONING
-// Memcached can't pattern-delete, so we version each resource
-// namespace and bake the version into every cache key. Bumping
-// the version orphans all old keys at once — they expire on their
-// own TTL — giving us real invalidation without SCAN/DEL.
-// ============================================================
+// Each resource namespace carries a version baked into every cache key.
+// Bumping it orphans all old keys at once; they age out on their own TTL.
+export const getNamespaceVersion = async (namespace: string): Promise<number> =>
+  versions.get(namespace) ?? 1
 
-/**
- * Get the current version number for a resource namespace (e.g. "players").
- * Missing = start at 1.
- */
-export const getNamespaceVersion = async (namespace: string): Promise<number> => {
-  try {
-    const result = await getClient().get(`ns:${namespace}`)
-    return result?.value ? parseInt(result.value.toString(), 10) : 1
-  } catch {
-    return 1
-  }
-}
-
-/**
- * Bump a namespace version — call after any create/update/delete.
- * Every key built with the old version becomes unreachable.
- */
 export const bumpNamespaceVersion = async (namespace: string): Promise<void> => {
-  try {
-    const existing = await getClient().get(`ns:${namespace}`)
-    if (!existing?.value) {
-      // seed at 2 so it differs from the default 1 that reads assume
-      await getClient().set(`ns:${namespace}`, '2', { expires: 0 }) // 0 = never expire
-    } else {
-      await getClient().increment(`ns:${namespace}`, 1) // atomic
-    }
-    logger.debug({ namespace }, 'Namespace version bumped')
-  } catch (error) {
-    logger.warn({ err: error, namespace }, 'Namespace bump failed')
-  }
+  versions.set(namespace, (versions.get(namespace) ?? 1) + 1)
 }

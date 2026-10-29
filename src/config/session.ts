@@ -20,7 +20,7 @@ export const createSessionMiddleware = () => {
     store: new PgStore({
       pool,
       tableName: 'sessions',
-      createTableIfMissing: true, // auto-create the sessions table on first run
+      createTableIfMissing: false, // sessions aren't used (auth is a JWT cookie); skip the startup table check
     }),
     cookie: {
       maxAge: SESSION_MAX_AGE,

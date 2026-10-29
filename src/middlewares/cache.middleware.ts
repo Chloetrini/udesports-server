@@ -16,6 +16,15 @@ export const cacheMiddleware = (namespace: string, durationSeconds: number = 60)
       return
     }
 
+    // Let Vercel's edge cache and browsers reuse the response too. The edge
+    // serves it instantly for durationSeconds and refreshes in the background
+    // for a while after; browsers always revalidate (max-age=0) so admin
+    // edits show up within one TTL.
+    res.setHeader(
+      'Cache-Control',
+      `public, max-age=0, s-maxage=${durationSeconds}, stale-while-revalidate=${durationSeconds * 5}`
+    )
+
     const version = await getNamespaceVersion(namespace)
     const key = `${generateCacheKey(req)}:v${version}`
 
