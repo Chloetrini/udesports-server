@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import { bumpNamespaceVersion, generateCacheKey, getCache, getNamespaceVersion, setCache } from '../lib/cache.js'
+import { bumpNamespaceVersion } from '../lib/cache.js'
 
 /**
  * Cache middleware — caches GET responses, keyed by namespace version.
@@ -8,42 +8,18 @@ import { bumpNamespaceVersion, generateCacheKey, getCache, getNamespaceVersion, 
  * The namespace version is baked into the key, so bumping that version
  * (via invalidateCache) instantly orphans every cached entry for the resource.
  */
-export const cacheMiddleware = (namespace: string, durationSeconds: number = 60) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    // Only cache GET requests
-    if (req.method !== 'GET') {
-      next()
-      return
+export const cacheMiddleware = (_namespace: string, durationSeconds: number = 60) => {
+  // Freshness matters more than a long cache: admins expect an edit or delete
+  // to show on the public site almost immediately. Each serverless instance
+  // used to keep its own in-memory copy (a write on one instance never cleared
+  // the others) and the edge could serve stale copies for minutes. Now only
+  // Vercel's shared edge cache holds a response, for a short fixed window, so
+  // a change is live within ~15s everywhere.
+  const edgeSeconds = Math.min(durationSeconds, 15)
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (req.method === 'GET') {
+      res.setHeader('Cache-Control', `public, max-age=0, s-maxage=${edgeSeconds}`)
     }
-
-    // Let Vercel's edge cache and browsers reuse the response too. The edge
-    // serves it instantly for durationSeconds and refreshes in the background
-    // for a while after; browsers always revalidate (max-age=0) so admin
-    // edits show up within one TTL.
-    res.setHeader(
-      'Cache-Control',
-      `public, max-age=0, s-maxage=${durationSeconds}, stale-while-revalidate=${durationSeconds * 5}`
-    )
-
-    const version = await getNamespaceVersion(namespace)
-    const key = `${generateCacheKey(req)}:v${version}`
-
-    // Try cache
-    const cached = await getCache(key)
-    if (cached !== null) {
-      res.setHeader('x-cache', 'HIT')
-      res.status(200).json(JSON.parse(cached))
-      return
-    }
-
-    // Override res.json to capture the response body for caching
-    const originalJson = res.json.bind(res)
-    res.json = function (body: any): Response {
-      setCache(key, JSON.stringify(body), durationSeconds) // fire and forget
-      res.setHeader('x-cache', 'MISS')
-      return originalJson(body)
-    }
-
     next()
   }
 }
